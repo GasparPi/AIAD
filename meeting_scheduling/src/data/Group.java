@@ -1,30 +1,33 @@
 package data;
 
-import agents.Employee;
-
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Group {
 
     private final int id;
     private final String name;
 
-    HashMap<Integer, Employee> employees;
-    HashMap<Integer, Meeting> meetings;
+    ArrayList<Integer> employees;
 
     public Group(int id, String name) {
         this.id = id;
         this.name = name;
-        this.employees = new HashMap<>();
-        this.meetings = new HashMap<>();
+        this.employees = new ArrayList<>();
     }
 
-    public void addEmployee(Employee employee) {
-        this.employees.put(employee.getId(), employee);
+    public void addEmployee(int employeeId) {
+        this.employees.add(employeeId);
     }
 
-    public void addMeeting(Meeting meeting) {
-        this.meetings.put(meeting.getId(), meeting);
+    public Integer getId() {
+        return this.id;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public ArrayList<Integer> getEmployees() {
+        return this.employees;
+    }
 }

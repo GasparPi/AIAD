@@ -2,14 +2,16 @@
   {
     "id": 1,
     "duration": 3,
-    "obligatory_employees": [
+    "group": 1,
+    "obligatory-employees": [
       1, 2
     ]
   },
   {
     "id": 2,
     "duration": 2,
-    "obligatory_employees": [
+    "group": 2,
+    "obligatory-employees": [
       1, 2
     ]
   }

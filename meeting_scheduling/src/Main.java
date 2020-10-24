@@ -3,7 +3,6 @@ import data.Meeting;
 import org.json.simple.parser.ParseException;
 import parsers.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -20,6 +19,10 @@ public class Main {
         HashMap<Integer, Meeting> meetings;
         HashMap<Integer, Group> groups;
 
+        //Setup employees
+
+
+        //Setup Meetings
         try {
             meetings = MeetingParser.parse(MEETINGS_DIR + MEETINGS_FILE);
         } catch (IOException | ParseException e) {
@@ -28,12 +31,31 @@ public class Main {
             return;
         }
 
-        for (Meeting m : meetings.values()) {
-            System.out.println("Meeting id: " + m.getId() + "; duration: " + m.getDuration());
+        //Setup Groups
+        try {
+            groups = GroupParser.parse(GROUPS_DIR + GROUPS_FILE);
+        } catch (IOException | ParseException e) {
+            System.err.println("Failed to parse groups file: " + GROUPS_DIR + GROUPS_FILE);
+            e.printStackTrace();
+            return;
         }
 
-        //Setup employees
-        //Setup Meetings
-        //Setup Groups
+
+        // Test: print
+        for (Meeting m : meetings.values()) {
+            System.out.println("Meeting id: " + m.getId() + "; duration: " + m.getDuration() + "; groupId:" + m.getGroupId());
+
+            for (Integer id : m.getObligatoryEmployees())
+                System.out.println("\tEmployee id:" + id);
+        }
+
+        System.out.println();
+
+        for (Group g : groups.values()) {
+            System.out.println("Group id: " + g.getId() + "; name: " + g.getName());
+
+            for (Integer id : g.getEmployees())
+                System.out.println("\tEmployee id:" + id);
+        }
     }
 }

@@ -1,24 +1,28 @@
 package data;
 
-import agents.Employee;
-
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Meeting {
 
     private final int id;
     private final int duration;
+    private final int groupId;
 
     private int day;
     private int startSlot;
     private int endSlot;
 
-    private HashMap<Integer, Employee> obligatoryEmployees;
+    private ArrayList<Integer> obligatoryEmployees;
 
-    public Meeting(int id, int duration) {
+    public Meeting(int id, int duration, int groupId) {
         this.id = id;
         this.duration = duration;
-        this.obligatoryEmployees = new HashMap<>();
+        this.groupId = groupId;
+        this.obligatoryEmployees = new ArrayList<>();
+    }
+
+    public void addObligatoryEmployee(int employeeId) {
+        this.obligatoryEmployees.add(employeeId);
     }
 
     public void schedule(int day, int startSlot, int endSlot) {
@@ -47,4 +51,11 @@ public class Meeting {
         return endSlot;
     }
 
+    public int getGroupId() {
+        return this.groupId;
+    }
+
+    public ArrayList<Integer> getObligatoryEmployees() {
+        return this.obligatoryEmployees;
+    }
 }

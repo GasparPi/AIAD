@@ -25,9 +25,16 @@ public class MeetingParser {
 
             int id = Integer.parseInt(jsonObject.get("id").toString());
             int duration = Integer.parseInt(jsonObject.get("duration").toString());
+            int groupId = Integer.parseInt(jsonObject.get("group").toString());
 
-            Meeting meeting = new Meeting(id, duration);
+            Meeting meeting = new Meeting(id, duration, groupId);
             meetings.put(meeting.getId(), meeting);
+
+            // Obligatory Employees
+            JSONArray employeesArray = (JSONArray) jsonObject.get("obligatory-employees");
+            for (Object employee : employeesArray) {
+                meeting.addObligatoryEmployee(Integer.parseInt(employee.toString()));
+            }
         }
 
         return meetings;
