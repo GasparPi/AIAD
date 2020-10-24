@@ -1,19 +1,15 @@
 [
   {
     "id": 1,
+    "name": "treasury",
     "employees": [
-      1, 2
-    ],
-    "meetings": [
       1, 2
     ]
   },
   {
     "id": 2,
+    "name": "state",
     "employees": [
-      1, 2
-    ],
-    "meetings": [
       1, 2
     ]
   }
