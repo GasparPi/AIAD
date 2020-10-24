@@ -1,3 +1,5 @@
+package data;
+
 import agents.Employee;
 
 import java.util.HashMap;
@@ -13,7 +15,6 @@ public class Group {
     public Group(int id, String name) {
         this.id = id;
         this.name = name;
-
         this.employees = new HashMap<>();
         this.meetings = new HashMap<>();
     }

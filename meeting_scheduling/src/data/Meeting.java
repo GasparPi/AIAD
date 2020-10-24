@@ -1,4 +1,8 @@
-import java.util.ArrayList;
+package data;
+
+import agents.Employee;
+
+import java.util.HashMap;
 
 public class Meeting {
 
@@ -9,11 +13,12 @@ public class Meeting {
     private int startSlot;
     private int endSlot;
 
-    private ArrayList<Integer> obligatoryEmployees;
+    private HashMap<Integer, Employee> obligatoryEmployees;
 
     public Meeting(int id, int duration) {
         this.id = id;
         this.duration = duration;
+        this.obligatoryEmployees = new HashMap<>();
     }
 
     public void schedule(int day, int startSlot, int endSlot) {
