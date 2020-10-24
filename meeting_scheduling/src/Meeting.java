@@ -6,8 +6,8 @@ public class Meeting {
     private final int duration;
 
     private int day;
-    private int startTime;
-    private int endTime;
+    private int startSlot;
+    private int endSlot;
 
     private ArrayList<Integer> obligatoryEmployees;
 
@@ -16,5 +16,30 @@ public class Meeting {
         this.duration = duration;
     }
 
+    public void schedule(int day, int startSlot, int endSlot) {
+        this.day = day;
+        this.startSlot = startSlot;
+        this.endSlot = endSlot;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public int getStartSlot() {
+        return startSlot;
+    }
+
+    public int getEndSlot() {
+        return endSlot;
+    }
 
 }

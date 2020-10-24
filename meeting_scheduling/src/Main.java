@@ -3,7 +3,7 @@ public class Main {
         System.out.println("Hello world");
 
         //Setup employees
-        //Setup Groups
         //Setup Meetings
+        //Setup Groups
     }
 }
