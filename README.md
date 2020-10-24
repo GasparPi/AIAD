@@ -1,4 +1,4 @@
-# data.Meeting Scheduling
+# Meeting Scheduling
 
 ## Descrição
 
