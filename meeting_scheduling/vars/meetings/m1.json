@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "duration": 30,
+    "obligatory_employees": [
+      1, 2
+    ]
+  },
+  {
+    "id": 2,
+    "duration": 120,
+    "obligatory_employees": [
+      1, 2
+    ]
+  }
+]
