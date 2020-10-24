@@ -13,6 +13,9 @@ A agendamento de reuniões em grandes empresas pode ser uma tarefa complexa. Cad
 * Horário das reuniões;
 * Fator de ocupação da agenda de cada funcionário;
 
+## Communications Flow
+
+![Communications Flow](./docs/communications_flow.png)
 
 
 
