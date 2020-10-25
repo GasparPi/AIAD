@@ -1,3 +1,4 @@
+import agents.Employee;
 import data.Group;
 import data.Meeting;
 import org.json.simple.parser.ParseException;
@@ -16,11 +17,22 @@ public class Main {
     final static String MEETINGS_FILE = "m1.json";
 
     public static void main(String[] args) {
+        HashMap<Integer, Employee> employees;
         HashMap<Integer, Meeting> meetings;
         HashMap<Integer, Group> groups;
 
         //Setup employees
+        try {
+            employees = EmployeeParser.parse(EMPLOYEES_DIR + EMPLOYEES_FILE);
+        } catch (IOException | ParseException e) {
+            System.err.println("Failed to parse meetings file: " + MEETINGS_DIR + MEETINGS_FILE);
+            e.printStackTrace();
+            return;
+        }
 
+        for (Employee e : employees.values()) {
+            System.out.println(e.toString());
+        }
 
         //Setup Meetings
         try {
