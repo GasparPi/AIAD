@@ -9,6 +9,10 @@ public class Timeslot {
         this.priority = priority;
     }
 
+    public int getSlot_identifier() {
+        return slot_identifier;
+    }
+
     @Override
     public String toString(){
         return "slot: " + slot_identifier + " ; priority: " + priority;
