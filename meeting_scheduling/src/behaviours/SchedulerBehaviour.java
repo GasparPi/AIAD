@@ -86,7 +86,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
                     } catch (UnreadableException e) {
                         e.printStackTrace();
                     }
-                    if(!accept && schedulerAgent.meetings.get(currentMeeting).getObligatoryEmployees().contains(id)){
+                    if(!accept && schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees().contains(id)){
                         acceptedByAll = false;
                     }
                 }
@@ -144,25 +144,25 @@ public class SchedulerBehaviour extends ContractNetInitiator {
             }
         }
         boolean scheduledSuccessfully = true;
-        for( int i : schedulerAgent.meetings.get(currentMeeting).getObligatoryEmployees()){
+        for( int i : schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees()){
             if(accepters.contains(i)){
                 System.out.println("Fucked up big time. yay.");
                 scheduledSuccessfully = false;
             }
         }
         if(scheduledSuccessfully){
-            schedulerAgent.meetings.get(currentMeeting).schedule(suggestions.get(0).getDay(), suggestions.get(0).getTimeslot(), suggestions.get(0).getTimeslot() + schedulerAgent.meetings.get(currentMeeting).getDuration() - 1);
+            schedulerAgent.getMeetings().get(currentMeeting).schedule(suggestions.get(0).getDay(), suggestions.get(0).getTimeslot(), suggestions.get(0).getTimeslot() + schedulerAgent.getMeetings().get(currentMeeting).getDuration() - 1);
         }
     }
 
     private ACLMessage prepState1CFP(ACLMessage cfp) {
-        for (int id : schedulerAgent.groups.get(schedulerAgent.meetings.get(currentMeeting).getGroupId()).getEmployees()) {
-            cfp.addReceiver(schedulerAgent.employeeAIDs.get(id));
+        for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
+            cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
         cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();
         content.setState(1);
-        content.setMeetingDuration(schedulerAgent.meetings.get(currentMeeting).getDuration());
+        content.setMeetingDuration(schedulerAgent.getMeetings().get(currentMeeting).getDuration());
         try {
             cfp.setContentObject(content);
         } catch (IOException e) {
@@ -172,8 +172,8 @@ public class SchedulerBehaviour extends ContractNetInitiator {
     }
 
     private ACLMessage prepState2CFP(ACLMessage cfp) {
-        for (int id : schedulerAgent.groups.get(schedulerAgent.meetings.get(currentMeeting).getGroupId()).getEmployees()) {
-            cfp.addReceiver(schedulerAgent.employeeAIDs.get(id));
+        for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
+            cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
         cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();

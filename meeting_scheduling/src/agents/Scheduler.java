@@ -13,9 +13,9 @@ public class Scheduler extends Agent {
 
     private final String id = "scheduler";
 
-    public HashMap<Integer, Group> groups; // TODO change to private field and add get method
-    public HashMap<Integer, Meeting> meetings; // TODO change to private field and add get method
-    public HashMap<Integer, AID> employeeAIDs; // TODO change to private field and add get method
+    private HashMap<Integer, Group> groups;
+    private HashMap<Integer, Meeting> meetings;
+    private HashMap<Integer, AID> employeeAIDs;
 
     public Scheduler(HashMap<Integer, Group> groups, HashMap<Integer, Meeting> meetings) {
         this.groups = groups;
@@ -37,4 +37,15 @@ public class Scheduler extends Agent {
         return id;
     }
 
+    public HashMap<Integer, Group> getGroups() {
+        return groups;
+    }
+
+    public HashMap<Integer, Meeting> getMeetings() {
+        return meetings;
+    }
+
+    public HashMap<Integer, AID> getEmployeeAIDs() {
+        return employeeAIDs;
+    }
 }
