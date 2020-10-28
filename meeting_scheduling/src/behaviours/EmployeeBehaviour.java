@@ -39,9 +39,9 @@ public class EmployeeBehaviour extends ContractNetResponder {
             MessageContent cfpContent = (MessageContent) cfp.getContentObject();
             MessageContent respContent = new MessageContent();
             respContent.setEmployeeId(employeeAgent.getId());
-            if(cfpContent.getState() == 1){
+            if(cfpContent.getState() == SchedulingState.REQUEST_TIMESLOTS){
                 meetingDuration = cfpContent.getMeetingDuration();
-                respContent.setState(1);
+                respContent.setState(SchedulingState.REQUEST_TIMESLOTS);
                 while(timeslotPreference.get(currentSuggestion).getAvailableDuration() < cfpContent.getMeetingDuration() && currentSuggestion < timeslotPreference.size()){
                     currentSuggestion++;
                 }
@@ -50,11 +50,11 @@ public class EmployeeBehaviour extends ContractNetResponder {
                     respContent.setTimeslot(timeslotPreference.get(currentSuggestion).getTimeslot());
                 }
             }
-            else if(cfpContent.getState() == 2){
-                respContent.setState(2);
+            else if(cfpContent.getState() == SchedulingState.DECIDE_TIMESLOTS){
+                respContent.setState(SchedulingState.DECIDE_TIMESLOTS);
                 boolean acceptance = false;
                 for (TSPair ts : timeslotPreference){
-                    if(ts.getDay() == cfpContent.getDay() && ts.getTimeslot() == cfpContent.getTimeslot()){
+                    if(ts.getDay().equals(cfpContent.getDay()) && ts.getTimeslot() == cfpContent.getTimeslot()){
                         if(ts.getAvailableDuration() >= meetingDuration){
                             acceptance = true;
                             break;

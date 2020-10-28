@@ -15,14 +15,14 @@ public class SchedulerBehaviour extends ContractNetInitiator {
 
     private ArrayList<TSPair> suggestions;
     private TSPair currentSuggestion;
-    private int state; //1 when asking for suggestions, 2 when deciding timeslot
+    private SchedulingState state; //1 when asking for suggestions, 2 when deciding timeslot
     private Scheduler schedulerAgent;
     private int currentMeeting;
 
     public SchedulerBehaviour(Scheduler a, ACLMessage cfp) {
         super(a, cfp);
         suggestions = new ArrayList<>();
-        state = 1;
+        state = SchedulingState.REQUEST_TIMESLOTS;
         schedulerAgent = a;
         currentMeeting = 1;
     }
@@ -33,11 +33,11 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         cfp.clearAllReceiver();
 
         switch (state) {
-            case 1:
+            case REQUEST_TIMESLOTS:
                 cfp = prepState1CFP(cfp);
                 break;
 
-            case 2:
+            case DECIDE_TIMESLOTS:
                 cfp = prepState2CFP(cfp);
                 break;
 
@@ -56,7 +56,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         ACLMessage cfp = (ACLMessage) this.getDataStore().get(this.CFP_KEY);
 
         switch (state) {
-            case 1:
+            case REQUEST_TIMESLOTS:
                 for( Object obj : responses){
                     MessageContent content;
                     try {
@@ -68,13 +68,13 @@ public class SchedulerBehaviour extends ContractNetInitiator {
 
 
                 }
-                state = 2;
+                state = SchedulingState.DECIDE_TIMESLOTS;
                 cfp = prepState2CFP(cfp);
 
                 v.add(cfp);
                 newIteration(v);
                 break;
-            case 2:
+            case DECIDE_TIMESLOTS:
                 boolean acceptedByAll = true;
                 for(Object obj : responses){
                     ACLMessage message = (ACLMessage) obj;
@@ -94,7 +94,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
                     ACLMessage acceptanceMessage = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 
                     MessageContent content = new MessageContent();
-                    content.setState(2);
+                    content.setState(SchedulingState.DECIDE_TIMESLOTS);
                     content.setDay(suggestions.get(0).getDay());
                     content.setTimeslot(suggestions.get(0).getTimeslot());
                     try {
@@ -113,7 +113,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
                 else{
                     suggestions.remove(0);
                     if(suggestions.isEmpty()){
-                        state = 1;
+                        state = SchedulingState.REQUEST_TIMESLOTS;
                         cfp = prepState1CFP(cfp);
                     }
                     else{
@@ -161,7 +161,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         }
         cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();
-        content.setState(1);
+        content.setState(SchedulingState.REQUEST_TIMESLOTS);
         content.setMeetingDuration(schedulerAgent.getMeetings().get(currentMeeting).getDuration());
         try {
             cfp.setContentObject(content);
@@ -177,7 +177,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         }
         cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();
-        content.setState(2);
+        content.setState(SchedulingState.DECIDE_TIMESLOTS);
         content.setDay(suggestions.get(0).getDay());
         content.setTimeslot(suggestions.get(0).getTimeslot());
         try {

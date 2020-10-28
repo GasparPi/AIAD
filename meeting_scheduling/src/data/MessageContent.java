@@ -1,9 +1,12 @@
 package data;
 
+import behaviours.SchedulingState;
+
 import java.io.Serializable;
 
+
 public class MessageContent implements Serializable {
-    private int state;
+    private SchedulingState state;
     private String day;
     private int timeslot;
     private int employeeId;
@@ -11,7 +14,7 @@ public class MessageContent implements Serializable {
     private boolean acceptance;
 
     public MessageContent(){
-        state = -1;
+        state = SchedulingState.NULL;
         day = "";
         timeslot = -1;
         employeeId = -1;
@@ -19,7 +22,7 @@ public class MessageContent implements Serializable {
         acceptance = false;
     }
 
-    public void setState(int state) {
+    public void setState(SchedulingState state) {
         this.state = state;
     }
 
@@ -43,7 +46,7 @@ public class MessageContent implements Serializable {
         this.acceptance = acceptance;
     }
 
-    public int getState() {
+    public SchedulingState getState() {
         return state;
     }
 
