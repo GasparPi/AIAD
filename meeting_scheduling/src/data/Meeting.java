@@ -8,7 +8,7 @@ public class Meeting {
     private final int duration;
     private final int groupId;
 
-    private int day;
+    private String day;
     private int startSlot;
     private int endSlot;
 
@@ -25,7 +25,7 @@ public class Meeting {
         this.obligatoryEmployees.add(employeeId);
     }
 
-    public void schedule(int day, int startSlot, int endSlot) {
+    public void schedule(String day, int startSlot, int endSlot) {
         this.day = day;
         this.startSlot = startSlot;
         this.endSlot = endSlot;
@@ -39,7 +39,7 @@ public class Meeting {
         return duration;
     }
 
-    public int getDay() {
+    public String getDay() {
         return day;
     }
 
