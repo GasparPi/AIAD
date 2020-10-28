@@ -35,10 +35,10 @@ public class Group {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Group id: ").append(this.id).append("; name: ").append(this.name);
+        stringBuilder.append("Group id: ").append(this.id).append("; name: ").append(this.name).append("\n");
 
         for (Integer id : this.employees)
-            stringBuilder.append("\tEmployee id:").append(id);
+            stringBuilder.append("\tEmployee id:").append(id).append("\n");
 
         return stringBuilder.toString();
     }

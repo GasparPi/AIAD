@@ -4,11 +4,17 @@ import data.Macros;
 import data.TSPair;
 import data.Timeslot;
 import jade.core.Agent;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Employee extends Agent {
+    private final static String SERVICE_TYPE = "meeting-scheduling";
+
     private final int id;
     private HashMap<String, ArrayList<Timeslot>> agenda;
 
@@ -47,11 +53,35 @@ public class Employee extends Agent {
         return agendaDay;
     }
 
+    public String getStringId() {
+        return "EmployeeAgent" + id;
+    }
+
     @Override
     protected void setup() {
+
+        try {
+            this.register();
+        } catch (FIPAException e) {
+            System.out.println("Failed to register agent in DF Service. Agent ID: " + this.id);
+            e.printStackTrace();
+            return;
+        }
+
         //TODO: parsing
         //TODO: get ordered ArrayList of TSPairs to suggest (timeslotPreference)
         //TODO: addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
+    }
+
+    private void register() throws FIPAException {
+        DFAgentDescription dfAgentDescription = new DFAgentDescription();
+        dfAgentDescription.setName(getAID());
+        ServiceDescription serviceDescription = new ServiceDescription();
+        serviceDescription.setType(SERVICE_TYPE);
+        serviceDescription.setName(getLocalName());
+        dfAgentDescription.addServices(serviceDescription);
+
+        DFService.register(this, dfAgentDescription);
     }
 
     public void removeAvailability(TSPair ts, int duration){

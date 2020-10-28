@@ -63,10 +63,10 @@ public class Meeting {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Meeting id: ").append(this.id).append("; duration: ").append(this.duration).append("; groupId:").append(this.groupId);
+        stringBuilder.append("Meeting id: ").append(this.id).append("; duration: ").append(this.duration).append("; groupId:").append(this.groupId).append("\n");
 
         for (Integer id : this.obligatoryEmployees)
-            stringBuilder.append("\tEmployee id:").append(id);
+            stringBuilder.append("\tEmployee id:").append(id).append("\n");
 
         return stringBuilder.toString();
     }

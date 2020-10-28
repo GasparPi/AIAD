@@ -81,7 +81,7 @@ public class Main {
         }
 
         for (Employee e : employees.values()) {
-            AgentController agentController = this.container.acceptNewAgent(String.valueOf(e.getId()), e);
+            AgentController agentController = this.container.acceptNewAgent(e.getStringId(), e);
             agentController.start();
         }
 
