@@ -1,10 +1,10 @@
 package agents;
 
 import data.Macros;
+import data.TSPair;
 import data.Timeslot;
 import jade.core.Agent;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -45,5 +45,16 @@ public class Employee extends Agent {
         }
 
         return agendaDay;
+    }
+
+    @Override
+    protected void setup() {
+        //TODO: parsing
+        //TODO: get ordered ArrayList of TSPairs to suggest (timeslotPreference)
+        //TODO: addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
+    }
+
+    public void removeAvailability(TSPair ts, int duration){
+        //TODO: remove <duration> timeslots from agenda, starting on <ts.day>,<ts.timeslot>
     }
 }

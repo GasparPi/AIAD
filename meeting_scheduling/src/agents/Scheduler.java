@@ -1,6 +1,6 @@
 package agents;
 
-import Behaviours.SchedulerBehaviour;
+import behaviours.SchedulerBehaviour;
 import data.Group;
 import data.Meeting;
 import jade.core.AID;

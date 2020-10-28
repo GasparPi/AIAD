@@ -1,10 +1,8 @@
-package Behaviours;
+package behaviours;
 
 import agents.Scheduler;
 import data.MessageContent;
 import data.TSPair;
-import data.Timeslot;
-import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
@@ -109,6 +107,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
                         ACLMessage message = (ACLMessage) obj;
                         acceptanceMessage.addReceiver(message.getSender());
                     }
+                    acceptanceMessage.setSender(schedulerAgent.getAID());
                     acceptances.add(acceptanceMessage);
                 }
                 else{
@@ -160,6 +159,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         for (int id : schedulerAgent.groups.get(schedulerAgent.meetings.get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.employeeAIDs.get(id));
         }
+        cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();
         content.setState(1);
         content.setMeetingDuration(schedulerAgent.meetings.get(currentMeeting).getDuration());
@@ -175,6 +175,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         for (int id : schedulerAgent.groups.get(schedulerAgent.meetings.get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.employeeAIDs.get(id));
         }
+        cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();
         content.setState(2);
         content.setDay(suggestions.get(0).getDay());
