@@ -1,11 +1,17 @@
 import agents.Employee;
+import agents.Scheduler;
 import data.Group;
 import data.Meeting;
+import jade.wrapper.StaleProxyException;
 import org.json.simple.parser.ParseException;
 import parsers.*;
 
 import java.io.IOException;
 import java.util.HashMap;
+import jade.core.ProfileImpl;
+import jade.core.Runtime;
+import jade.wrapper.AgentController;
+import jade.wrapper.ContainerController;
 
 public class Main {
     final static String EMPLOYEES_DIR = "meeting_scheduling/vars/employees/";
@@ -16,24 +22,32 @@ public class Main {
     final static String GROUPS_FILE = "g1.json";
     final static String MEETINGS_FILE = "m1.json";
 
-    public static void main(String[] args) {
-        HashMap<Integer, Employee> employees;
-        HashMap<Integer, Meeting> meetings;
-        HashMap<Integer, Group> groups;
+    HashMap<Integer, Employee> employees;
+    HashMap<Integer, Meeting> meetings;
+    HashMap<Integer, Group> groups;
+    Scheduler scheduler;
 
-        //Setup employees
+    Runtime runtime;
+    ProfileImpl profile;
+    ContainerController container;
+
+    public static void main(String[] args) {
+        Main main = new Main();
+
+        main.setupData();
+
         try {
-            employees = EmployeeParser.parse(EMPLOYEES_DIR + EMPLOYEES_FILE);
-        } catch (IOException | ParseException e) {
-            System.err.println("Failed to parse meetings file: " + MEETINGS_DIR + MEETINGS_FILE);
+            main.setupAgents();
+        } catch (StaleProxyException e) {
+            System.err.println("Failed to setup Employee Agents");
             e.printStackTrace();
             return;
         }
 
-        for (Employee e : employees.values()) {
-            System.out.println(e.toString());
-        }
+        main.printInfo();
+    }
 
+    public void setupData() {
         //Setup Meetings
         try {
             meetings = MeetingParser.parse(MEETINGS_DIR + MEETINGS_FILE);
@@ -49,25 +63,45 @@ public class Main {
         } catch (IOException | ParseException e) {
             System.err.println("Failed to parse groups file: " + GROUPS_DIR + GROUPS_FILE);
             e.printStackTrace();
-            return;
+        }
+    }
+
+    public void setupAgents() throws StaleProxyException {
+        this.runtime = Runtime.instance();
+        this.profile = new ProfileImpl();
+        // TODO: this.profile.setParameter();
+        this.container = this.runtime.createMainContainer(this.profile);
+
+        //Setup employees
+        try {
+            employees = EmployeeParser.parse(EMPLOYEES_DIR + EMPLOYEES_FILE);
+        } catch (IOException | ParseException e) {
+            System.err.println("Failed to parse employees file: " + EMPLOYEES_DIR + EMPLOYEES_FILE);
+            e.printStackTrace();
         }
 
+        for (Employee e : employees.values()) {
+            AgentController agentController = this.container.acceptNewAgent(String.valueOf(e.getId()), e);
+            agentController.start();
+        }
 
-        // Test: print
+        // Setup Scheduler
+        this.scheduler = new Scheduler(this.groups, this.meetings);
+        AgentController schedulerController = this.container.acceptNewAgent(scheduler.getId(), scheduler);
+        schedulerController.start();
+    }
+
+    public void printInfo() {
+        for (Employee e : employees.values()) {
+            System.out.println(e.toString());
+        }
+
         for (Meeting m : meetings.values()) {
-            System.out.println("Meeting id: " + m.getId() + "; duration: " + m.getDuration() + "; groupId:" + m.getGroupId());
-
-            for (Integer id : m.getObligatoryEmployees())
-                System.out.println("\tEmployee id:" + id);
+            System.out.println(m.toString());
         }
-
-        System.out.println();
 
         for (Group g : groups.values()) {
-            System.out.println("Group id: " + g.getId() + "; name: " + g.getName());
-
-            for (Integer id : g.getEmployees())
-                System.out.println("\tEmployee id:" + id);
+            System.out.println(g.toString());
         }
     }
 }

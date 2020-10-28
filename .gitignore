@@ -25,3 +25,7 @@ hs_err_pid*
 # IntelliJ Utility files
 .idea
 *.iml
+
+# Jage txt files
+APDescription.txt
+MTPs-Main-Container.txt

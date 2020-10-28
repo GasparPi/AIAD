@@ -30,4 +30,16 @@ public class Group {
     public ArrayList<Integer> getEmployees() {
         return this.employees;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Group id: ").append(this.id).append("; name: ").append(this.name);
+
+        for (Integer id : this.employees)
+            stringBuilder.append("\tEmployee id:").append(id);
+
+        return stringBuilder.toString();
+    }
 }

@@ -58,4 +58,16 @@ public class Meeting {
     public ArrayList<Integer> getObligatoryEmployees() {
         return this.obligatoryEmployees;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Meeting id: ").append(this.id).append("; duration: ").append(this.duration).append("; groupId:").append(this.groupId);
+
+        for (Integer id : this.obligatoryEmployees)
+            stringBuilder.append("\tEmployee id:").append(id);
+
+        return stringBuilder.toString();
+    }
 }

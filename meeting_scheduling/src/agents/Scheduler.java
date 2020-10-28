@@ -11,18 +11,30 @@ import java.util.HashMap;
 
 public class Scheduler extends Agent {
 
-    public HashMap<Integer, Meeting> meetings;
-    public HashMap<Integer, Group> groups;
-    public HashMap<Integer, AID> employeeAIDs;
+    private final String id = "scheduler";
+
+    public HashMap<Integer, Group> groups; // TODO change to private field and add get method
+    public HashMap<Integer, Meeting> meetings; // TODO change to private field and add get method
+    public HashMap<Integer, AID> employeeAIDs; // TODO change to private field and add get method
+
+    public Scheduler(HashMap<Integer, Group> groups, HashMap<Integer, Meeting> meetings) {
+        this.groups = groups;
+        this.meetings = meetings;
+        this.employeeAIDs = new HashMap<>();
+    }
 
     @Override
     protected void setup() {
         super.setup();
-        /*TODO: parse meetings
-          TODO: parse groups
+        /*
           TODO: access DF to get employee agents' AIDs
           TODO: commit suicide
          */
         addBehaviour(new SchedulerBehaviour(this, new ACLMessage(ACLMessage.CFP)));
     }
+
+    public String getId() {
+        return id;
+    }
+
 }
