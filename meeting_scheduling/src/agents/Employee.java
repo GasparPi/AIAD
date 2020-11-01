@@ -9,8 +9,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class Employee extends Agent {
     private final static String SERVICE_TYPE = "meeting-scheduling";
@@ -86,5 +85,57 @@ public class Employee extends Agent {
 
     public void removeAvailability(TSPair ts, int duration){
         //TODO: remove <duration> timeslots from agenda, starting on <ts.day>,<ts.timeslot>
+    }
+
+    public ArrayList<TSPair> sortTimeslotsByPreference(){
+        ArrayList<TSPair> timeslots = new ArrayList<>();
+
+        getDayOfWeekTimeslots("monday", timeslots);
+        getDayOfWeekTimeslots("tuesday", timeslots);
+        getDayOfWeekTimeslots("wednesday", timeslots);
+        getDayOfWeekTimeslots("thursday", timeslots);
+        getDayOfWeekTimeslots("friday", timeslots);
+
+        Collections.sort(timeslots);
+
+        System.out.println(id + " AGENDA BY PREFERENCE: \n" + timeslots.toString());
+
+        return timeslots;
+    }
+
+    private void getDayOfWeekTimeslots(String dayOfWeek, ArrayList<TSPair> timeslots){
+        ArrayList<Timeslot> dayTimeslots = this.agenda.get(dayOfWeek);
+
+        if(dayTimeslots != null){
+            Collections.sort(dayTimeslots);
+
+            for(int i = 0; i < dayTimeslots.size(); i++){
+                int duration = getTimeslotDuration(dayTimeslots.get(i), i, timeslots, dayTimeslots);
+                TSPair ts = new TSPair(dayOfWeek, dayTimeslots.get(i).getSlotIdentifier(), dayTimeslots.get(i).getPriority());
+                ts.setAvailableDuration(duration);
+                timeslots.add(ts);
+            }
+        }
+    }
+
+    private int getTimeslotDuration(Timeslot ts, int index, ArrayList<TSPair> timeslots, ArrayList<Timeslot> dayTimeslots){
+        for(int i = 0; i < timeslots.size(); i++){
+            if(ts.getSlotIdentifier() - 1 == timeslots.get(i).getTimeslot()){
+                return timeslots.get(i).getAvailableDuration() - 1;
+            }
+        }
+
+        int duration = 1;
+        int current_timeslot = ts.getSlotIdentifier();
+
+        for(int i = index; i < dayTimeslots.size(); i++){
+            if(current_timeslot + 1 == timeslots.get(i).getTimeslot()){
+                current_timeslot++;
+                duration++;
+            }
+            else break;
+        }
+
+        return duration;
     }
 }

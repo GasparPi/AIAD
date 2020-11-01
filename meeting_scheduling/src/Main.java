@@ -36,13 +36,13 @@ public class Main {
 
         main.setupData();
 
-        try {
-            main.setupAgents();
-        } catch (StaleProxyException e) {
-            System.err.println("Failed to setup Employee Agents");
-            e.printStackTrace();
-            return;
-        }
+//        try {
+//            main.setupAgents();
+//        } catch (StaleProxyException e) {
+//            System.err.println("Failed to setup Employee Agents");
+//            e.printStackTrace();
+//            return;
+//        }
 
         main.printInfo();
     }
