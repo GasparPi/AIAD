@@ -36,13 +36,13 @@ public class Main {
 
         main.setupData();
 
-//        try {
-//            main.setupAgents();
-//        } catch (StaleProxyException e) {
-//            System.err.println("Failed to setup Employee Agents");
-//            e.printStackTrace();
-//            return;
-//        }
+        try {
+            main.setupAgents();
+        } catch (StaleProxyException e) {
+            System.err.println("Failed to setup Employee Agents");
+            e.printStackTrace();
+            return;
+        }
 
         main.printInfo();
     }
@@ -79,6 +79,9 @@ public class Main {
             System.err.println("Failed to parse employees file: " + EMPLOYEES_DIR + EMPLOYEES_FILE);
             e.printStackTrace();
         }
+
+        // UNCOMMENT TO TEST
+        // employees.get(1).sortAgendaByPreference();
 
         for (Employee e : employees.values()) {
             AgentController agentController = this.container.acceptNewAgent(e.getStringId(), e);

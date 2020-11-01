@@ -19,11 +19,11 @@ public class Timeslot implements Comparable<Timeslot>{
 
     @Override
     public String toString(){
-        return "slot: " + slot_identifier + " ; priority: " + priority;
+        return "slot: " + slot_identifier;
     }
 
     @Override
     public int compareTo(Timeslot timeslot) {
-        return timeslot.getSlotIdentifier() - this.getSlotIdentifier();
+        return this.getSlotIdentifier() - timeslot.getSlotIdentifier();
     }
 }

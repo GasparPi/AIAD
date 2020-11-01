@@ -87,7 +87,7 @@ public class Employee extends Agent {
         //TODO: remove <duration> timeslots from agenda, starting on <ts.day>,<ts.timeslot>
     }
 
-    public ArrayList<TSPair> sortTimeslotsByPreference(){
+    public ArrayList<TSPair> sortAgendaByPreference(){
         ArrayList<TSPair> timeslots = new ArrayList<>();
 
         getDayOfWeekTimeslots("monday", timeslots);
@@ -98,7 +98,7 @@ public class Employee extends Agent {
 
         Collections.sort(timeslots);
 
-        System.out.println(id + " AGENDA BY PREFERENCE: \n" + timeslots.toString());
+        System.out.println("EMPLOYEE " + id + ": AGENDA BY PREFERENCE: \n" + timeslots.toString());
 
         return timeslots;
     }
@@ -106,11 +106,11 @@ public class Employee extends Agent {
     private void getDayOfWeekTimeslots(String dayOfWeek, ArrayList<TSPair> timeslots){
         ArrayList<Timeslot> dayTimeslots = this.agenda.get(dayOfWeek);
 
-        if(dayTimeslots != null){
+        if(dayTimeslots != null) {
             Collections.sort(dayTimeslots);
 
-            for(int i = 0; i < dayTimeslots.size(); i++){
-                int duration = getTimeslotDuration(dayTimeslots.get(i), i, timeslots, dayTimeslots);
+            for (int i = 0; i < dayTimeslots.size(); i++) {
+                int duration = getTimeslotDuration(dayOfWeek, dayTimeslots, i, timeslots);
                 TSPair ts = new TSPair(dayOfWeek, dayTimeslots.get(i).getSlotIdentifier(), dayTimeslots.get(i).getPriority());
                 ts.setAvailableDuration(duration);
                 timeslots.add(ts);
@@ -118,18 +118,20 @@ public class Employee extends Agent {
         }
     }
 
-    private int getTimeslotDuration(Timeslot ts, int index, ArrayList<TSPair> timeslots, ArrayList<Timeslot> dayTimeslots){
-        for(int i = 0; i < timeslots.size(); i++){
-            if(ts.getSlotIdentifier() - 1 == timeslots.get(i).getTimeslot()){
-                return timeslots.get(i).getAvailableDuration() - 1;
+    private int getTimeslotDuration(String dayOfWeek, ArrayList<Timeslot> dayTimeslots, int index, ArrayList<TSPair> timeslots){
+        if(timeslots.size() > 0){
+            TSPair last_ts = timeslots.get(timeslots.size()-1);
+            if(dayOfWeek.equals(last_ts.getDay())
+                    && dayTimeslots.get(index).getSlotIdentifier() - 1 == last_ts.getTimeslot()){
+                return last_ts.getAvailableDuration() - 1;
             }
         }
 
         int duration = 1;
-        int current_timeslot = ts.getSlotIdentifier();
+        int current_timeslot = dayTimeslots.get(index).getSlotIdentifier();
 
-        for(int i = index; i < dayTimeslots.size(); i++){
-            if(current_timeslot + 1 == timeslots.get(i).getTimeslot()){
+        for(int i = index + 1; i < dayTimeslots.size(); i++){
+            if(current_timeslot + 1 == dayTimeslots.get(i).getSlotIdentifier()){
                 current_timeslot++;
                 duration++;
             }

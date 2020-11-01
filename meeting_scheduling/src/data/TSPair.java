@@ -53,10 +53,10 @@ public class TSPair implements Comparable<TSPair> {
     @Override
     public int compareTo(TSPair tsPair) {
         if(this.preference != tsPair.getPreference()){
-            return this.preference - tsPair.getPreference();
+            return tsPair.getPreference() - this.preference;
         }
         else if(this.availableDuration != tsPair.getAvailableDuration()){
-            return this.availableDuration - tsPair.getAvailableDuration();
+            return tsPair.getAvailableDuration() - this.availableDuration;
         }
         else if(this.timeslot != tsPair.getTimeslot()){
             return this.timeslot - tsPair.getTimeslot();
