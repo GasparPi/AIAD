@@ -54,7 +54,7 @@ public class EmployeeBehaviour extends ContractNetResponder {
             else if(cfpContent.getState() == SchedulingState.DECIDE_TIMESLOTS){
                 respContent.setState(SchedulingState.DECIDE_TIMESLOTS);
                 boolean acceptance = false;
-                for (TSPair ts : timeslotPreference){
+                for (TSPair ts : timeslotPreference) {
                     if(ts.getDay().equals(cfpContent.getDay()) && ts.getTimeslot() == cfpContent.getTimeslot()){
                         if(ts.getAvailableDuration() >= meetingDuration){
                             acceptance = true;

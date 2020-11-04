@@ -80,9 +80,6 @@ public class Main {
             e.printStackTrace();
         }
 
-        // UNCOMMENT TO TEST
-        // employees.get(1).sortAgendaByPreference();
-
         for (Employee e : employees.values()) {
             AgentController agentController = this.container.acceptNewAgent(e.getStringId(), e);
             agentController.start();

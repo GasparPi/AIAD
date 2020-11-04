@@ -70,10 +70,7 @@ public class Employee extends Agent {
             return;
         }
 
-
-        //TODO: get ordered ArrayList of TSPairs to suggest (timeslotPreference)
-
-        ArrayList<TSPair> timeslotPreference = new ArrayList<>();
+        ArrayList<TSPair> timeslotPreference = this.sortAgendaByPreference();
 
         addBehaviour(new EmployeeSendIDBehaviour(this, MessageTemplate.MatchAll()));
         //addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
