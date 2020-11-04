@@ -1,5 +1,6 @@
 package agents;
 
+import behaviours.EmployeeSendIDBehaviour;
 import data.Macros;
 import data.TSPair;
 import data.Timeslot;
@@ -8,6 +9,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.lang.acl.MessageTemplate;
 
 import java.util.*;
 
@@ -70,6 +72,7 @@ public class Employee extends Agent {
         //TODO: parsing
         //TODO: get ordered ArrayList of TSPairs to suggest (timeslotPreference)
         //TODO: addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
+        addBehaviour(new EmployeeSendIDBehaviour(this, MessageTemplate.MatchAll()));
     }
 
     private void register() throws FIPAException {

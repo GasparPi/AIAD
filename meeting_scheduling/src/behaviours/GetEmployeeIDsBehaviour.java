@@ -24,13 +24,23 @@ public class GetEmployeeIDsBehaviour extends Behaviour {
             aclMessage.addReceiver(aid);
             aclMessage.setContent("GET ID");
             this.myAgent.send(aclMessage);
+            System.out.println("Scheduler sent request message with aid " + aid.toString());
         }
 
+        ACLMessage msg = this.myAgent.receive();
+        if (msg != null) {
+            System.out.println("[Scheduler] received an inform msg: " + msg.getContent());
+            ((Scheduler) myAgent).addEmployeeID(parseEmployeeId(msg.getContent()), msg.getSender());
+        }
 
     }
 
     @Override
     public boolean done() {
         return ((Scheduler) this.myAgent).hasAllEmployeeIDs();
+    }
+
+    private int parseEmployeeId(String messageContent) {
+        return Integer.parseInt(messageContent.split(":")[1]);
     }
 }
