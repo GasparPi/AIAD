@@ -14,7 +14,7 @@ public class EmployeeSendIDBehaviour extends Behaviour {
 
     @Override
     public void action() {
-        ACLMessage msg = this.myAgent.receive();
+        ACLMessage msg = this.myAgent.receive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
         if (msg != null) {
             this.receivedRequest = true;
             int employeeId = ((Employee) myAgent).getId();
@@ -30,6 +30,12 @@ public class EmployeeSendIDBehaviour extends Behaviour {
 
     @Override
     public boolean done() {
-        return this.receivedRequest;
+        if (receivedRequest) {
+
+            //this.myAgent.addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
+            return receivedRequest;
+        }
+
+        return false;
     }
 }

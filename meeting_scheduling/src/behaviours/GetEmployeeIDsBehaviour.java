@@ -4,6 +4,7 @@ import agents.Scheduler;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 import java.util.ArrayList;
 
@@ -11,6 +12,7 @@ public class GetEmployeeIDsBehaviour extends Behaviour {
 
     private final ArrayList<AID> employeeAIDs;
     private Scheduler scheduler;
+    private boolean sentMessages = false;
 
     public GetEmployeeIDsBehaviour(Scheduler scheduler, ArrayList<AID> employeeAIDs) {
         super(scheduler);
@@ -20,8 +22,9 @@ public class GetEmployeeIDsBehaviour extends Behaviour {
 
     @Override
     public void action() {
-        for (AID aid : this.employeeAIDs) {
-            if (!this.scheduler.hasEmployeeID(aid)) {
+        if (!this.sentMessages) {
+
+            for (AID aid : this.employeeAIDs) {
                 ACLMessage aclMessage = new ACLMessage(ACLMessage.REQUEST);
                 aclMessage.addReceiver(aid);
                 aclMessage.setContent("GET ID");
@@ -30,7 +33,9 @@ public class GetEmployeeIDsBehaviour extends Behaviour {
             }
         }
 
-        ACLMessage msg = this.scheduler.receive();
+        this.sentMessages = true;
+
+        ACLMessage msg = this.scheduler.receive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
         if (msg != null) {
             System.out.println("[Scheduler] received INFORM msg: " + msg.getContent());
             this.scheduler.addEmployeeID(parseEmployeeId(msg.getContent()), msg.getSender());
@@ -39,7 +44,7 @@ public class GetEmployeeIDsBehaviour extends Behaviour {
 
     @Override
     public boolean done() {
-        return this.scheduler.hasAllEmployeeIDs();
+        return this.sentMessages;
     }
 
     private static int parseEmployeeId(String messageContent) {

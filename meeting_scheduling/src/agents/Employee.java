@@ -73,7 +73,6 @@ public class Employee extends Agent {
         ArrayList<TSPair> timeslotPreference = this.sortAgendaByPreference();
 
         addBehaviour(new EmployeeSendIDBehaviour(this, MessageTemplate.MatchAll()));
-        //addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
     }
 
     private void register() throws FIPAException {

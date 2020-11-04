@@ -36,8 +36,12 @@ public class EmployeeBehaviour extends ContractNetResponder {
         ACLMessage response = new ACLMessage(ACLMessage.PROPOSE);
         response.addReceiver(cfp.getSender());
         response.setSender(employeeAgent.getAID());
+
+        MessageContent cfpContent;
+
         try {
-            MessageContent cfpContent = (MessageContent) cfp.getContentObject();
+                System.out.println(cfp.getContentObject().toString());
+                cfpContent = (MessageContent) cfp.getContentObject();
             MessageContent respContent = new MessageContent();
             respContent.setEmployeeId(employeeAgent.getId());
             if(cfpContent.getState() == SchedulingState.REQUEST_TIMESLOTS){

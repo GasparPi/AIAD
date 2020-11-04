@@ -34,11 +34,11 @@ public class SchedulerBehaviour extends ContractNetInitiator {
 
         switch (state) {
             case REQUEST_TIMESLOTS:
-                cfp = prepState1CFP(cfp);
+                prepState1CFP(cfp);
                 break;
 
             case DECIDE_TIMESLOTS:
-                cfp = prepState2CFP(cfp);
+                prepState2CFP(cfp);
                 break;
 
             default:
@@ -69,7 +69,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
 
                 }
                 state = SchedulingState.DECIDE_TIMESLOTS;
-                cfp = prepState2CFP(cfp);
+                prepState2CFP(cfp);
 
                 v.add(cfp);
                 newIteration(v);
@@ -114,10 +114,10 @@ public class SchedulerBehaviour extends ContractNetInitiator {
                     suggestions.remove(0);
                     if(suggestions.isEmpty()){
                         state = SchedulingState.REQUEST_TIMESLOTS;
-                        cfp = prepState1CFP(cfp);
+                        prepState1CFP(cfp);
                     }
                     else{
-                        cfp = prepState2CFP(cfp);
+                        prepState2CFP(cfp);
                     }
                     v.add(cfp);
                     newIteration(v);
@@ -155,7 +155,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         }
     }
 
-    private ACLMessage prepState1CFP(ACLMessage cfp) {
+    private void prepState1CFP(ACLMessage cfp) {
         for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
@@ -168,10 +168,9 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return cfp;
     }
 
-    private ACLMessage prepState2CFP(ACLMessage cfp) {
+    private void prepState2CFP(ACLMessage cfp) {
         for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
@@ -185,6 +184,5 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return cfp;
     }
 }

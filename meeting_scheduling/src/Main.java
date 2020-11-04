@@ -2,6 +2,9 @@ import agents.Employee;
 import agents.Scheduler;
 import data.Group;
 import data.Meeting;
+import jade.core.Agent;
+import jade.core.Profile;
+import jade.tools.sniffer.Sniffer;
 import jade.wrapper.StaleProxyException;
 import org.json.simple.parser.ParseException;
 import parsers.*;
@@ -69,8 +72,10 @@ public class Main {
     public void setupAgents() throws StaleProxyException {
         this.runtime = Runtime.instance();
         this.profile = new ProfileImpl();
-        // TODO: this.profile.setParameter();
+        this.profile.setParameter(Profile.GUI, "true");
         this.container = this.runtime.createMainContainer(this.profile);
+
+        this.setupDebugMode();
 
         //Setup employees
         try {
@@ -102,6 +107,17 @@ public class Main {
 
         for (Group g : groups.values()) {
             System.out.println(g.toString());
+        }
+    }
+
+    private void setupDebugMode() {
+        Sniffer sniffer = new Sniffer();
+
+        try {
+            AgentController agentController = this.container.acceptNewAgent("sniffer", sniffer);
+            agentController.start();
+        } catch (StaleProxyException e) {
+            e.printStackTrace();
         }
     }
 }
