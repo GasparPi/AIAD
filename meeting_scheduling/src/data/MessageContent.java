@@ -4,7 +4,6 @@ import behaviours.SchedulingState;
 
 import java.io.Serializable;
 
-
 public class MessageContent implements Serializable {
     private SchedulingState state;
     private String day;

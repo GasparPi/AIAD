@@ -1,7 +1,6 @@
 package agents;
 
-import behaviours.GetEmployeeIDsBehaviour;
-import behaviours.SchedulerBehaviour;
+import behaviours.scheduler.SchedulerBehaviour;
 import data.Group;
 import data.Meeting;
 import jade.core.AID;
@@ -10,7 +9,6 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.lang.acl.ACLMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +32,6 @@ public class Scheduler extends Agent {
 
     @Override
     protected void setup() {
-
         try {
             this.searchEmployeeAIDs();
         } catch (FIPAException e) {
@@ -43,10 +40,7 @@ public class Scheduler extends Agent {
             return;
         }
 
-        addBehaviour(new GetEmployeeIDsBehaviour(this, this.agentsAIDs));
-        addBehaviour(new SchedulerBehaviour(this, new ACLMessage(ACLMessage.CFP)));
-
-        //TODO: commit suicide
+        addBehaviour(new SchedulerBehaviour(this));
     }
 
     public void searchEmployeeAIDs() throws FIPAException {
@@ -80,20 +74,15 @@ public class Scheduler extends Agent {
         return employeeAIDs;
     }
 
-    public boolean hasAllEmployeeIDs() {
-        return this.employeeAIDs.size() == this.agentsAIDs.size();
+    public ArrayList<AID> getAgentsAIDs() {
+        return this.agentsAIDs;
     }
 
     public void addEmployeeID(Integer id, AID aid) {
         this.employeeAIDs.put(id, aid);
     }
 
-    public boolean hasEmployeeID(AID aid) {
-        for (AID agentId : this.employeeAIDs.values()) {
-            if (agentId.equals(aid))
-                return true;
-        }
-
-        return false;
+    public boolean hasAllEmployeeIDs() {
+        return this.agentsAIDs.size() == this.employeeAIDs.size();
     }
 }

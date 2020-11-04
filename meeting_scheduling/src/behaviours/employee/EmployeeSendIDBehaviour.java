@@ -1,4 +1,5 @@
-package behaviours;
+package behaviours.employee;
+
 import agents.Employee;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
@@ -8,7 +9,7 @@ public class EmployeeSendIDBehaviour extends Behaviour {
 
     private boolean receivedRequest = false;
 
-    public EmployeeSendIDBehaviour(Employee e, MessageTemplate mt) {
+    public EmployeeSendIDBehaviour(Employee e) {
         super(e);
     }
 
@@ -25,17 +26,10 @@ public class EmployeeSendIDBehaviour extends Behaviour {
             this.myAgent.send(reply);
             System.out.println("[Employee " + employeeId + "] sent INFORM msg: " + reply.getContent());
         }
-
     }
 
     @Override
     public boolean done() {
-        if (receivedRequest) {
-
-            //this.myAgent.addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
-            return receivedRequest;
-        }
-
-        return false;
+        return receivedRequest;
     }
 }

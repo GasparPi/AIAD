@@ -12,7 +12,7 @@ public class Meeting {
     private int startSlot;
     private int endSlot;
 
-    private ArrayList<Integer> obligatoryEmployees;
+    private final ArrayList<Integer> obligatoryEmployees;
 
     public Meeting(int id, int duration, int groupId) {
         this.id = id;

@@ -23,10 +23,6 @@ public class Group {
         return this.id;
     }
 
-    public String getName() {
-        return this.name;
-    }
-
     public ArrayList<Integer> getEmployees() {
         return this.employees;
     }

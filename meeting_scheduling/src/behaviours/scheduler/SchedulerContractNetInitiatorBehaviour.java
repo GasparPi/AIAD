@@ -1,6 +1,7 @@
-package behaviours;
+package behaviours.scheduler;
 
 import agents.Scheduler;
+import behaviours.SchedulingState;
 import data.MessageContent;
 import data.TSPair;
 import jade.lang.acl.ACLMessage;
@@ -11,20 +12,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class SchedulerBehaviour extends ContractNetInitiator {
+public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator {
 
-    private ArrayList<TSPair> suggestions;
+    private final ArrayList<TSPair> suggestions;
     private TSPair currentSuggestion;
     private SchedulingState state; //1 when asking for suggestions, 2 when deciding timeslot
-    private Scheduler schedulerAgent;
+    private final Scheduler schedulerAgent;
     private int currentMeeting;
 
-    public SchedulerBehaviour(Scheduler a, ACLMessage cfp) {
-        super(a, cfp);
-        suggestions = new ArrayList<>();
-        state = SchedulingState.REQUEST_TIMESLOTS;
-        schedulerAgent = a;
-        currentMeeting = 1;
+    public SchedulerContractNetInitiatorBehaviour(Scheduler scheduler) {
+        super(scheduler, new ACLMessage(ACLMessage.CFP));
+
+        this.suggestions = new ArrayList<>();
+        this.state = SchedulingState.REQUEST_TIMESLOTS;
+        this.schedulerAgent = scheduler;
+        this.currentMeeting = 1;
     }
 
     @Override
@@ -33,17 +35,12 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         cfp.clearAllReceiver();
 
         switch (state) {
-            case REQUEST_TIMESLOTS:
-                prepState1CFP(cfp);
-                break;
-
-            case DECIDE_TIMESLOTS:
-                prepState2CFP(cfp);
-                break;
-
-            default:
+            case REQUEST_TIMESLOTS -> prepState1CFP(cfp);
+            case DECIDE_TIMESLOTS -> prepState2CFP(cfp);
+            default -> {
                 System.out.println("Something went terribly wrong.");
                 schedulerAgent.doDelete();
+            }
         }
 
         return super.prepareCfps(cfp);
@@ -56,11 +53,11 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         ACLMessage cfp = (ACLMessage) this.getDataStore().get(this.CFP_KEY);
 
         switch (state) {
-            case REQUEST_TIMESLOTS:
-                for( Object obj : responses){
+            case REQUEST_TIMESLOTS -> {
+                for (Object obj : responses) {
                     MessageContent content;
                     try {
-                         content = (MessageContent) ((ACLMessage) obj).getContentObject();
+                        content = (MessageContent) ((ACLMessage) obj).getContentObject();
                         suggestions.add(new TSPair(content.getDay(), content.getTimeslot()));
                     } catch (UnreadableException e) {
                         e.printStackTrace();
@@ -70,27 +67,26 @@ public class SchedulerBehaviour extends ContractNetInitiator {
                 }
                 state = SchedulingState.DECIDE_TIMESLOTS;
                 prepState2CFP(cfp);
-
                 v.add(cfp);
                 newIteration(v);
-                break;
-            case DECIDE_TIMESLOTS:
+            }
+            case DECIDE_TIMESLOTS -> {
                 boolean acceptedByAll = true;
-                for(Object obj : responses){
+                for (Object obj : responses) {
                     ACLMessage message = (ACLMessage) obj;
                     int id = 0;
                     boolean accept = false;
                     try {
-                        id = ((MessageContent)message.getContentObject()).getEmployeeId();
-                        accept = ((MessageContent)message.getContentObject()).getAcceptance();
+                        id = ((MessageContent) message.getContentObject()).getEmployeeId();
+                        accept = ((MessageContent) message.getContentObject()).getAcceptance();
                     } catch (UnreadableException e) {
                         e.printStackTrace();
                     }
-                    if(!accept && schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees().contains(id)){
+                    if (!accept && schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees().contains(id)) {
                         acceptedByAll = false;
                     }
                 }
-                if(acceptedByAll){
+                if (acceptedByAll) {
                     ACLMessage acceptanceMessage = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 
                     MessageContent content = new MessageContent();
@@ -103,41 +99,40 @@ public class SchedulerBehaviour extends ContractNetInitiator {
                         e.printStackTrace();
                     }
 
-                    for( Object obj : responses){
+                    for (Object obj : responses) {
                         ACLMessage message = (ACLMessage) obj;
                         acceptanceMessage.addReceiver(message.getSender());
                     }
                     acceptanceMessage.setSender(schedulerAgent.getAID());
                     acceptances.add(acceptanceMessage);
-                }
-                else{
+                } else {
                     suggestions.remove(0);
-                    if(suggestions.isEmpty()){
+                    if (suggestions.isEmpty()) {
                         state = SchedulingState.REQUEST_TIMESLOTS;
                         prepState1CFP(cfp);
-                    }
-                    else{
+                    } else {
                         prepState2CFP(cfp);
                     }
                     v.add(cfp);
                     newIteration(v);
                 }
-                break;
-            default:
+            }
+            default -> {
                 System.out.println("Something went horribly wrong.");
                 schedulerAgent.doDelete();
+            }
         }
 
     }
 
     @Override
     protected void handleAllResultNotifications(Vector resultNotifications) {
-        ArrayList<Integer> accepters = new ArrayList<>();
+        ArrayList<Integer> acceptors = new ArrayList<>();
         for(Object obj : resultNotifications){
             ACLMessage message = (ACLMessage) obj;
             if(message.getPerformative() == ACLMessage.INFORM) {
                 try {
-                    accepters.add(((MessageContent)message.getContentObject()).getEmployeeId());
+                    acceptors.add(((MessageContent)message.getContentObject()).getEmployeeId());
                 } catch (UnreadableException e) {
                     e.printStackTrace();
                 }
@@ -145,7 +140,7 @@ public class SchedulerBehaviour extends ContractNetInitiator {
         }
         boolean scheduledSuccessfully = true;
         for( int i : schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees()){
-            if(accepters.contains(i)){
+            if(acceptors.contains(i)){
                 System.out.println("Fucked up big time. yay.");
                 scheduledSuccessfully = false;
             }

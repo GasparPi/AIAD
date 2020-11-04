@@ -1,7 +1,6 @@
 package agents;
 
-import behaviours.EmployeeBehaviour;
-import behaviours.EmployeeSendIDBehaviour;
+import behaviours.employee.EmployeeBehaviour;
 import data.Macros;
 import data.TSPair;
 import data.Timeslot;
@@ -10,8 +9,6 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.lang.acl.MessageTemplate;
-
 import java.util.*;
 
 public class Employee extends Agent {
@@ -19,18 +16,16 @@ public class Employee extends Agent {
 
     private final int id;
     private final HashMap<String, ArrayList<Timeslot>> agenda;
+    private final ArrayList<TSPair> sortedAgenda;
 
     public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda) {
         this.id = id;
         this.agenda = agenda;
+        this.sortedAgenda = this.sortAgendaByPreference();
     }
 
     public int getId() {
         return id;
-    }
-
-    public HashMap<String, ArrayList<Timeslot>> getAgenda() {
-        return agenda;
     }
 
     @Override
@@ -44,15 +39,15 @@ public class Employee extends Agent {
     }
 
     private String agendaDayToString(String dayOfWeek){
-        String agendaDay = dayOfWeek + '\n';
+        StringBuilder agendaDay = new StringBuilder(dayOfWeek + '\n');
 
         ArrayList<Timeslot> timeslots = agenda.get(dayOfWeek);
 
         for(Timeslot timeslot : timeslots){
-            agendaDay = agendaDay + "   " + timeslot.toString() + '\n';
+            agendaDay.append("   ").append(timeslot.toString()).append('\n');
         }
 
-        return agendaDay;
+        return agendaDay.toString();
     }
 
     public String getStringId() {
@@ -70,9 +65,7 @@ public class Employee extends Agent {
             return;
         }
 
-        ArrayList<TSPair> timeslotPreference = this.sortAgendaByPreference();
-
-        addBehaviour(new EmployeeSendIDBehaviour(this, MessageTemplate.MatchAll()));
+        addBehaviour(new EmployeeBehaviour(this));
     }
 
     private void register() throws FIPAException {
@@ -90,7 +83,7 @@ public class Employee extends Agent {
         //TODO: remove <duration> timeslots from agenda, starting on <ts.day>,<ts.timeslot>
     }
 
-    public ArrayList<TSPair> sortAgendaByPreference(){
+    private ArrayList<TSPair> sortAgendaByPreference(){
         ArrayList<TSPair> timeslots = new ArrayList<>();
 
         getDayOfWeekTimeslots("monday", timeslots);
@@ -142,5 +135,9 @@ public class Employee extends Agent {
         }
 
         return duration;
+    }
+
+    public ArrayList<TSPair> getTimeSlotPreference() {
+        return sortedAgenda;
     }
 }

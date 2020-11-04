@@ -1,12 +1,9 @@
-package behaviours;
+package behaviours.employee;
 
 import agents.Employee;
+import behaviours.SchedulingState;
 import data.MessageContent;
 import data.TSPair;
-import jade.core.Agent;
-import jade.domain.FIPAAgentManagement.FailureException;
-import jade.domain.FIPAAgentManagement.NotUnderstoodException;
-import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
@@ -15,23 +12,24 @@ import jade.proto.ContractNetResponder;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class EmployeeBehaviour extends ContractNetResponder {
+public class EmployeeContractNetResponderBehaviour extends ContractNetResponder {
 
     private final ArrayList<TSPair> timeslotPreference;
     private int currentSuggestion;
     private int meetingDuration;
     private final Employee employeeAgent;
 
-    public EmployeeBehaviour(Employee a, MessageTemplate mt, ArrayList<TSPair> timeslotPreference) {
-        super(a, mt);
-        this.employeeAgent = a;
-        this.timeslotPreference = timeslotPreference;
+    public EmployeeContractNetResponderBehaviour(Employee employee) {
+        super(employee, MessageTemplate.MatchPerformative(ACLMessage.CFP));
+
+        this.employeeAgent = employee;
+        this.timeslotPreference = employee.getTimeSlotPreference();
         this.currentSuggestion = 0;
         this.meetingDuration = 0;
     }
 
     @Override
-    protected ACLMessage handleCfp(ACLMessage cfp) throws RefuseException, FailureException, NotUnderstoodException {
+    protected ACLMessage handleCfp(ACLMessage cfp) {
 
         ACLMessage response = new ACLMessage(ACLMessage.PROPOSE);
         response.addReceiver(cfp.getSender());
@@ -77,7 +75,7 @@ public class EmployeeBehaviour extends ContractNetResponder {
     }
 
     @Override
-    protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept) throws FailureException {
+    protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept) {
         ACLMessage response;
         MessageContent respContent = new MessageContent();
         respContent.setEmployeeId(employeeAgent.getId());
