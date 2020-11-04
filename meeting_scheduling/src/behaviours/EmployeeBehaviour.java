@@ -17,13 +17,14 @@ import java.util.ArrayList;
 
 public class EmployeeBehaviour extends ContractNetResponder {
 
-    private ArrayList<TSPair> timeslotPreference;
+    private final ArrayList<TSPair> timeslotPreference;
     private int currentSuggestion;
     private int meetingDuration;
-    private Employee employeeAgent;
+    private final Employee employeeAgent;
 
-    public EmployeeBehaviour(Agent a, MessageTemplate mt, ArrayList<TSPair> timeslotPreference) {
+    public EmployeeBehaviour(Employee a, MessageTemplate mt, ArrayList<TSPair> timeslotPreference) {
         super(a, mt);
+        this.employeeAgent = a;
         this.timeslotPreference = timeslotPreference;
         this.currentSuggestion = 0;
         this.meetingDuration = 0;

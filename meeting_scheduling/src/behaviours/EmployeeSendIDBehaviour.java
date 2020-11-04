@@ -6,7 +6,7 @@ import jade.lang.acl.MessageTemplate;
 
 public class EmployeeSendIDBehaviour extends Behaviour {
 
-    private final boolean receivedRequest = false;
+    private boolean receivedRequest = false;
 
     public EmployeeSendIDBehaviour(Employee e, MessageTemplate mt) {
         super(e);
@@ -16,12 +16,14 @@ public class EmployeeSendIDBehaviour extends Behaviour {
     public void action() {
         ACLMessage msg = this.myAgent.receive();
         if (msg != null) {
+            this.receivedRequest = true;
             int employeeId = ((Employee) myAgent).getId();
-            System.out.println("[Employee " + employeeId + "] received a request msg: " + msg.getContent());
+            System.out.println("[Employee " + employeeId + "] received REQUEST msg: " + msg.getContent());
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.INFORM);
             reply.setContent("ID:" + employeeId);
             this.myAgent.send(reply);
+            System.out.println("[Employee " + employeeId + "] sent INFORM msg: " + reply.getContent());
         }
 
     }

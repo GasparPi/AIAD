@@ -20,10 +20,10 @@ public class Scheduler extends Agent {
     private final static String ID = "SCHEDULER";
     private final static String SERVICE_TYPE = "meeting-scheduling";
 
-    private HashMap<Integer, Group> groups;
-    private HashMap<Integer, Meeting> meetings;
-    private ArrayList<AID> agentsAIDs;
-    private HashMap<Integer, AID> employeeAIDs;
+    private final HashMap<Integer, Group> groups;
+    private final HashMap<Integer, Meeting> meetings;
+    private final ArrayList<AID> agentsAIDs;
+    private final HashMap<Integer, AID> employeeAIDs;
 
     public Scheduler(HashMap<Integer, Group> groups, HashMap<Integer, Meeting> meetings) {
         this.groups = groups;
@@ -43,15 +43,10 @@ public class Scheduler extends Agent {
             return;
         }
 
-
-
-        /*
-          TODO: commit suicide
-         */
-
-
-        addBehaviour(new SchedulerBehaviour(this, new ACLMessage(ACLMessage.CFP)));
         addBehaviour(new GetEmployeeIDsBehaviour(this, this.agentsAIDs));
+        addBehaviour(new SchedulerBehaviour(this, new ACLMessage(ACLMessage.CFP)));
+
+        //TODO: commit suicide
     }
 
     public void searchEmployeeAIDs() throws FIPAException {
@@ -89,7 +84,16 @@ public class Scheduler extends Agent {
         return this.employeeAIDs.size() == this.agentsAIDs.size();
     }
 
-    public void addEmployeeID(int id, AID aid) {
+    public void addEmployeeID(Integer id, AID aid) {
         this.employeeAIDs.put(id, aid);
+    }
+
+    public boolean hasEmployeeID(AID aid) {
+        for (AID agentId : this.employeeAIDs.values()) {
+            if (agentId.equals(aid))
+                return true;
+        }
+
+        return false;
     }
 }

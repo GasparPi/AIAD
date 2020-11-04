@@ -1,5 +1,6 @@
 package agents;
 
+import behaviours.EmployeeBehaviour;
 import behaviours.EmployeeSendIDBehaviour;
 import data.Macros;
 import data.TSPair;
@@ -17,7 +18,7 @@ public class Employee extends Agent {
     private final static String SERVICE_TYPE = "meeting-scheduling";
 
     private final int id;
-    private HashMap<String, ArrayList<Timeslot>> agenda;
+    private final HashMap<String, ArrayList<Timeslot>> agenda;
 
     public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda) {
         this.id = id;
@@ -69,10 +70,13 @@ public class Employee extends Agent {
             return;
         }
 
-        //TODO: parsing
+
         //TODO: get ordered ArrayList of TSPairs to suggest (timeslotPreference)
-        //TODO: addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
+
+        ArrayList<TSPair> timeslotPreference = new ArrayList<>();
+
         addBehaviour(new EmployeeSendIDBehaviour(this, MessageTemplate.MatchAll()));
+        //addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
     }
 
     private void register() throws FIPAException {
