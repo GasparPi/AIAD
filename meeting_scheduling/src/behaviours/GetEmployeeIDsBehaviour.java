@@ -2,6 +2,7 @@ package behaviours;
 
 import agents.Scheduler;
 import jade.core.AID;
+import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -9,11 +10,10 @@ import java.util.ArrayList;
 
 public class GetEmployeeIDsBehaviour extends Behaviour {
 
-    private final Scheduler scheduler;
     private final ArrayList<AID> employeeAIDs;
 
-    public GetEmployeeIDsBehaviour(Scheduler scheduler, ArrayList<AID> employeeAIDs) {
-        this.scheduler = scheduler;
+    public GetEmployeeIDsBehaviour(Agent scheduler, ArrayList<AID> employeeAIDs) {
+        super(scheduler);
         this.employeeAIDs = employeeAIDs;
     }
 
@@ -23,12 +23,14 @@ public class GetEmployeeIDsBehaviour extends Behaviour {
             ACLMessage aclMessage = new ACLMessage(ACLMessage.REQUEST);
             aclMessage.addReceiver(aid);
             aclMessage.setContent("GET ID");
-            this.scheduler.send(aclMessage);
+            this.myAgent.send(aclMessage);
         }
+
+
     }
 
     @Override
     public boolean done() {
-        return this.scheduler.hasAllEmployeeIDs();
+        return ((Scheduler) this.myAgent).hasAllEmployeeIDs();
     }
 }
