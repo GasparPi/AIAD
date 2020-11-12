@@ -2,13 +2,13 @@ import agents.Employee;
 import agents.Scheduler;
 import data.Group;
 import data.Meeting;
-import jade.core.Agent;
 import jade.core.Profile;
 import jade.tools.sniffer.Sniffer;
 import jade.wrapper.StaleProxyException;
 import org.json.simple.parser.ParseException;
 import parsers.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import jade.core.ProfileImpl;
@@ -20,6 +20,8 @@ public class Main {
     final static String EMPLOYEES_DIR = "meeting_scheduling/vars/employees/";
     final static String GROUPS_DIR = "meeting_scheduling/vars/groups/";
     final static String MEETINGS_DIR = "meeting_scheduling/vars/meetings/";
+
+    final static String LOGS_DIR = "logs/";
 
     final static String EMPLOYEES_FILE = "e1.json";
     final static String GROUPS_FILE = "g1.json";
@@ -47,6 +49,7 @@ public class Main {
             return;
         }
 
+        main.deletePreviousLogs();
         main.printInfo();
     }
 
@@ -79,7 +82,7 @@ public class Main {
 
         //Setup employees
         try {
-            employees = EmployeeParser.parse(EMPLOYEES_DIR + EMPLOYEES_FILE);
+            employees = EmployeeParser.parse(EMPLOYEES_DIR + EMPLOYEES_FILE, LOGS_DIR);
         } catch (IOException | ParseException e) {
             System.err.println("Failed to parse employees file: " + EMPLOYEES_DIR + EMPLOYEES_FILE);
             e.printStackTrace();
@@ -91,7 +94,7 @@ public class Main {
         }
 
         // Setup Scheduler
-        this.scheduler = new Scheduler(this.groups, this.meetings);
+        this.scheduler = new Scheduler(this.groups, this.meetings, LOGS_DIR);
         AgentController schedulerController = this.container.acceptNewAgent(scheduler.getId(), scheduler);
         schedulerController.start();
     }
@@ -119,5 +122,21 @@ public class Main {
         } catch (StaleProxyException e) {
             e.printStackTrace();
         }
+    }
+
+    private void deletePreviousLogs() {
+        File logDir = new File(LOGS_DIR);
+        if (logDir.exists())
+            deleteDirRecursively(logDir);
+    }
+
+    private void deleteDirRecursively(File dir) {
+        File[] allContents = dir.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirRecursively(file);
+            }
+        }
+        dir.delete();
     }
 }

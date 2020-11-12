@@ -29,3 +29,6 @@ hs_err_pid*
 # Jage txt files
 APDescription.txt
 MTPs-Main-Container.txt
+
+# Log files
+logs/

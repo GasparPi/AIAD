@@ -4,9 +4,11 @@ import agents.Scheduler;
 import behaviours.SchedulingState;
 import data.MessageContent;
 import data.TSPair;
+import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
+import jade.util.leap.Iterator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,6 +45,22 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
             }
         }
 
+        //Logger
+        MessageContent cfpContent = null;
+        try {
+            cfpContent = (MessageContent) cfp.getContentObject();
+        } catch (UnreadableException e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<AID> receivers = new ArrayList<>();
+        Iterator receiverIt = cfp.getAllReceiver();
+        while (receiverIt.hasNext()) {
+            AID receiver = (AID) receiverIt.next();
+            receivers.add(receiver);
+        }
+        this.schedulerAgent.getLogger().logMessageContent("PREPARED CFP", cfpContent, "TO", receivers);
+
         return super.prepareCfps(cfp);
     }
 
@@ -55,10 +73,14 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
         switch (state) {
             case REQUEST_TIMESLOTS -> {
                 for (Object obj : responses) {
+                    ACLMessage aclMessage = (ACLMessage) obj;
                     MessageContent content;
                     try {
-                        content = (MessageContent) ((ACLMessage) obj).getContentObject();
+                        content = (MessageContent) aclMessage.getContentObject();
                         suggestions.add(new TSPair(content.getDay(), content.getTimeslot()));
+
+                        // Logger
+                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED RESPONSE", content,"FROM", aclMessage.getSender());
                     } catch (UnreadableException e) {
                         e.printStackTrace();
                     }
@@ -74,14 +96,22 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                 boolean acceptedByAll = true;
                 for (Object obj : responses) {
                     ACLMessage message = (ACLMessage) obj;
+
                     int id = 0;
                     boolean accept = false;
+                    MessageContent content;
                     try {
-                        id = ((MessageContent) message.getContentObject()).getEmployeeId();
-                        accept = ((MessageContent) message.getContentObject()).getAcceptance();
+                        content = (MessageContent) message.getContentObject();
+                        id = content.getEmployeeId();
+                        accept = content.getAcceptance();
+
+                        // Logger
+                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED RESPONSE", content, "FROM", message.getSender());
+
                     } catch (UnreadableException e) {
                         e.printStackTrace();
                     }
+
                     if (!accept && schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees().contains(id)) {
                         acceptedByAll = false;
                     }
@@ -128,24 +158,32 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
     @Override
     protected void handleAllResultNotifications(Vector resultNotifications) {
         ArrayList<Integer> acceptors = new ArrayList<>();
-        for(Object obj : resultNotifications){
+        for (Object obj : resultNotifications){
             ACLMessage message = (ACLMessage) obj;
-            if(message.getPerformative() == ACLMessage.INFORM) {
-                try {
-                    acceptors.add(((MessageContent)message.getContentObject()).getEmployeeId());
-                } catch (UnreadableException e) {
-                    e.printStackTrace();
-                }
+
+            try {
+                MessageContent content = (MessageContent) message.getContentObject();
+
+                // Logger
+                this.schedulerAgent.getLogger().logMessageContent("RECEIVED RESULT NOTIFICATION", content, "FROM", message.getSender());
+
+                if (message.getPerformative() == ACLMessage.INFORM)
+                    acceptors.add(content.getEmployeeId());
+
+
+            } catch (UnreadableException e) {
+                e.printStackTrace();
             }
         }
+
         boolean scheduledSuccessfully = true;
-        for( int i : schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees()){
-            if(acceptors.contains(i)){
+        for ( int i : schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees()){
+            if (acceptors.contains(i)){
                 System.out.println("Fucked up big time. yay.");
                 scheduledSuccessfully = false;
             }
         }
-        if(scheduledSuccessfully){
+        if (scheduledSuccessfully){
             schedulerAgent.getMeetings().get(currentMeeting).schedule(suggestions.get(0).getDay(), suggestions.get(0).getTimeslot(), suggestions.get(0).getTimeslot() + schedulerAgent.getMeetings().get(currentMeeting).getDuration() - 1);
         }
     }

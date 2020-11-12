@@ -18,7 +18,10 @@ public class ReceiveEmployeeIDsBehaviour extends Behaviour {
     public void action() {
         ACLMessage msg = this.scheduler.receive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
         if (msg != null) {
-            System.out.println("[Scheduler] received INFORM msg: " + msg.getContent());
+
+            // Logger
+            this.scheduler.getLogger().logMessageContent("RECEIVED INFORM", msg.getContent(),"FROM", msg.getSender());
+
             this.scheduler.addEmployeeID(parseEmployeeId(msg.getContent()), msg.getSender());
         }
 

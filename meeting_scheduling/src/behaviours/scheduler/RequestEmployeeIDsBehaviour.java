@@ -1,9 +1,11 @@
 package behaviours.scheduler;
 
 import agents.Scheduler;
+import data.MessageContent;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
+import jade.tools.sniffer.Message;
 
 import java.util.ArrayList;
 
@@ -26,7 +28,9 @@ public class RequestEmployeeIDsBehaviour extends Behaviour {
             aclMessage.addReceiver(aid);
             aclMessage.setContent("GET ID");
             this.myAgent.send(aclMessage);
-            System.out.println("[Scheduler] sent REQUEST message to " + aid.toString());
+
+            // Logger
+            this.scheduler.getLogger().logMessageContent("SENT REQUEST", aclMessage.getContent(),"TO", aid);
         }
 
         this.done = true;

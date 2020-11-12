@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EmployeeParser {
-    public static HashMap<Integer, Employee> parse(String pathname) throws IOException, ParseException {
+    public static HashMap<Integer, Employee> parse(String pathname, String logDir) throws IOException, ParseException {
         HashMap<Integer, Employee> employees = new HashMap<>();
 
         JSONParser parser = new JSONParser();
@@ -36,7 +36,7 @@ public class EmployeeParser {
             parseAgenda(Macros.THURSDAY, agenda_raw, agenda);
             parseAgenda(Macros.FRIDAY, agenda_raw, agenda);
 
-            employees.put(id, new Employee(id, agenda));
+            employees.put(id, new Employee(id, agenda, logDir));
         }
 
         return employees;

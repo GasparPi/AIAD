@@ -4,6 +4,8 @@ import behaviours.employee.EmployeeBehaviour;
 import data.Macros;
 import data.TSPair;
 import data.Timeslot;
+import logger.MyLogger;
+
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -17,11 +19,13 @@ public class Employee extends Agent {
     private final int id;
     private final HashMap<String, ArrayList<Timeslot>> agenda;
     private final ArrayList<TSPair> sortedAgenda;
+    private final MyLogger logger;
 
-    public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda) {
+    public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda, String logDir) {
         this.id = id;
         this.agenda = agenda;
         this.sortedAgenda = this.sortAgendaByPreference();
+        this.logger = new MyLogger(logDir, "Employee" + id);
     }
 
     public int getId() {
@@ -75,6 +79,9 @@ public class Employee extends Agent {
         serviceDescription.setType(SERVICE_TYPE);
         serviceDescription.setName(getLocalName());
         dfAgentDescription.addServices(serviceDescription);
+
+        //Logger
+        this.logger.logInfo("REGISTERED IN DF SERVICE");
 
         DFService.register(this, dfAgentDescription);
     }
@@ -139,5 +146,9 @@ public class Employee extends Agent {
 
     public ArrayList<TSPair> getTimeSlotPreference() {
         return sortedAgenda;
+    }
+
+    public MyLogger getLogger() {
+        return logger;
     }
 }

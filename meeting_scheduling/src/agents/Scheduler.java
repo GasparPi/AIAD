@@ -9,6 +9,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import logger.MyLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,12 +23,14 @@ public class Scheduler extends Agent {
     private final HashMap<Integer, Meeting> meetings;
     private final ArrayList<AID> agentsAIDs;
     private final HashMap<Integer, AID> employeeAIDs;
+    private final MyLogger logger;
 
-    public Scheduler(HashMap<Integer, Group> groups, HashMap<Integer, Meeting> meetings) {
+    public Scheduler(HashMap<Integer, Group> groups, HashMap<Integer, Meeting> meetings, String logsDir) {
         this.groups = groups;
         this.meetings = meetings;
         this.agentsAIDs = new ArrayList<>();
         this.employeeAIDs = new HashMap<>();
+        this.logger = new MyLogger(logsDir, ID);
     }
 
     @Override
@@ -54,7 +57,9 @@ public class Scheduler extends Agent {
         for (DFAgentDescription agentDescription : searchResults) {
             AID aid = agentDescription.getName();
             this.agentsAIDs.add(aid);
-            System.out.println("Agent found. AID: " + aid.toString());
+
+            //Logger
+            this.logger.logInfo("FOUND AGENT IN DF SERVICE: AID: " + aid.getLocalName());
         }
     }
 
@@ -84,5 +89,9 @@ public class Scheduler extends Agent {
 
     public boolean hasAllEmployeeIDs() {
         return this.agentsAIDs.size() == this.employeeAIDs.size();
+    }
+
+    public MyLogger getLogger() {
+        return logger;
     }
 }

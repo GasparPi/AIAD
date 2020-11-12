@@ -8,9 +8,11 @@ import jade.lang.acl.MessageTemplate;
 public class EmployeeSendIDBehaviour extends Behaviour {
 
     private boolean receivedRequest = false;
+    private Employee employee;
 
     public EmployeeSendIDBehaviour(Employee e) {
         super(e);
+        this.employee = e;
     }
 
     @Override
@@ -18,13 +20,18 @@ public class EmployeeSendIDBehaviour extends Behaviour {
         ACLMessage msg = this.myAgent.receive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
         if (msg != null) {
             this.receivedRequest = true;
-            int employeeId = ((Employee) myAgent).getId();
-            System.out.println("[Employee " + employeeId + "] received REQUEST msg: " + msg.getContent());
+            int employeeId = employee.getId();
+
+            // Logger
+            this.employee.getLogger().logMessageContent("RECEIVED REQUEST", msg.getContent(),  "FROM", msg.getSender());
+
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.INFORM);
             reply.setContent("ID:" + employeeId);
-            this.myAgent.send(reply);
-            System.out.println("[Employee " + employeeId + "] sent INFORM msg: " + reply.getContent());
+            this.employee.send(reply);
+
+            // Logger
+            this.employee.getLogger().logMessageContent("SENT INFORM", reply.getContent(),"TO", msg.getSender());
         }
     }
 

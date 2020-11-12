@@ -68,4 +68,24 @@ public class MessageContent implements Serializable {
     public boolean getAcceptance() {
         return acceptance;
     }
+
+    @Override
+    public String toString() {
+        return "Message Content[" +
+                    "State: " + this.stateToString() + " | " +
+                    "Day: " + this.day + " | " +
+                    "TimeSlot: " + this.timeslot + " | " +
+                    "EmployeeID: " + this.employeeId + " | " +
+                    "Meeting Duration: " + this.meetingDuration + " | " +
+                    "Acceptance: " + (this.acceptance ? "true" : "false") +
+                "];";
+    }
+
+    private String stateToString() {
+        return switch (this.state) {
+            case DECIDE_TIMESLOTS -> "Decide TimeSlots";
+            case REQUEST_TIMESLOTS -> "Request TimeSlots";
+            case NULL -> "NULL";
+        };
+    }
 }

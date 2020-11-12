@@ -40,6 +40,10 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
         try {
             cfpContent = (MessageContent) cfp.getContentObject();
             MessageContent respContent = new MessageContent();
+
+            //Logger
+            this.employeeAgent.getLogger().logMessageContent("HANDLE CFP",cfpContent,"FROM", cfp.getSender());
+
             respContent.setEmployeeId(employeeAgent.getId());
 
             switch (cfpContent.getState()) {
@@ -75,6 +79,9 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
 
             response.setContentObject(respContent);
 
+            //Logger
+            this.employeeAgent.getLogger().logMessageContent("HANDLE CFP RESPONSE", respContent, "TO", cfp.getSender());
+
         } catch (UnreadableException | IOException e) {
             e.printStackTrace();
         }
@@ -88,7 +95,12 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
         MessageContent respContent = new MessageContent();
         respContent.setEmployeeId(employeeAgent.getId());
         try {
-            if(((MessageContent)propose.getContentObject()).getAcceptance()){
+            MessageContent proposeContent = (MessageContent) propose.getContentObject();
+
+            //Logger
+            this.employeeAgent.getLogger().logMessageContent("HANDLE ACCEPT PROPOSAL", proposeContent, "FROM", propose.getSender());
+
+            if (proposeContent.getAcceptance()){
                 response = new ACLMessage(ACLMessage.INFORM);
                 response.addReceiver(accept.getSender());
                 response.setSender(employeeAgent.getAID());
@@ -96,6 +108,10 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
                 TSPair ts = new TSPair(acceptContent.getDay(), acceptContent.getTimeslot());
                 employeeAgent.removeAvailability(ts, meetingDuration);
                 response.setContentObject(respContent);
+
+                //Logger
+                this.employeeAgent.getLogger().logMessageContent("RESPONSE TO ACCEPT PROPOSAL", respContent,"TO", accept.getSender());
+
                 return response;
             }
         } catch (UnreadableException | IOException e) {
@@ -104,11 +120,16 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
 
         response = new ACLMessage(ACLMessage.FAILURE);
         response.addReceiver(accept.getSender());
+
         try {
             response.setContentObject(respContent);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //Logger
+        this.employeeAgent.getLogger().logMessageContent("RESPONSE TO ACCEPT PROPOSAL",  respContent,  "TO", accept.getSender());
+
         return response;
     }
 }
