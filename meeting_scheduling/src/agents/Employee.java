@@ -17,11 +17,13 @@ public class Employee extends Agent {
     private final int id;
     private final HashMap<String, ArrayList<Timeslot>> agenda;
     private final ArrayList<TSPair> sortedAgenda;
+    private int meetings;
 
     public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda) {
         this.id = id;
         this.agenda = agenda;
         this.sortedAgenda = this.sortAgendaByPreference();
+        this.meetings = 0;
     }
 
     public int getId() {
@@ -139,5 +141,11 @@ public class Employee extends Agent {
 
     public ArrayList<TSPair> getTimeSlotPreference() {
         return sortedAgenda;
+    }
+
+    public void addMeetings(int m){ meetings += m; }
+
+    public int getMeetings() {
+        return meetings;
     }
 }

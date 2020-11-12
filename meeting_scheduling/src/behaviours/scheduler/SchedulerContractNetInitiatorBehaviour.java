@@ -20,13 +20,13 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
     private final Scheduler schedulerAgent;
     private int currentMeeting;
 
-    public SchedulerContractNetInitiatorBehaviour(Scheduler scheduler) {
+    public SchedulerContractNetInitiatorBehaviour(Scheduler scheduler, int currentMeeting) {
         super(scheduler, new ACLMessage(ACLMessage.CFP));
 
         this.suggestions = new ArrayList<>();
         this.state = SchedulingState.REQUEST_TIMESLOTS;
         this.schedulerAgent = scheduler;
-        this.currentMeeting = 1;
+        this.currentMeeting = currentMeeting;
     }
 
     @Override

@@ -9,6 +9,8 @@ public class EmployeeBehaviour extends SequentialBehaviour {
         super(employee);
 
         addSubBehaviour(new EmployeeSendIDBehaviour(employee));
-        addSubBehaviour(new EmployeeContractNetResponderBehaviour(employee));
+        for(int i = 0; i < employee.getMeetings(); i++) {
+            addSubBehaviour(new EmployeeContractNetResponderBehaviour(employee));
+        }
     }
 }

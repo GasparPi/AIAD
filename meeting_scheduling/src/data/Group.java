@@ -8,11 +8,13 @@ public class Group {
     private final String name;
 
     ArrayList<Integer> employees;
+    private int meetings;
 
     public Group(int id, String name) {
         this.id = id;
         this.name = name;
         this.employees = new ArrayList<>();
+        this.meetings = 0;
     }
 
     public void addEmployee(int employeeId) {
@@ -37,5 +39,11 @@ public class Group {
             stringBuilder.append("\tEmployee id:").append(id).append("\n");
 
         return stringBuilder.toString();
+    }
+
+    public void incMeetings() { meetings++; }
+
+    public int getMeetings() {
+        return meetings;
     }
 }
