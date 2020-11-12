@@ -8,7 +8,7 @@ import jade.lang.acl.MessageTemplate;
 public class EmployeeSendIDBehaviour extends Behaviour {
 
     private boolean receivedRequest = false;
-    private Employee employee;
+    private final Employee employee;
 
     public EmployeeSendIDBehaviour(Employee e) {
         super(e);

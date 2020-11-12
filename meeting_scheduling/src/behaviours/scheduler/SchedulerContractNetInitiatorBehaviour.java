@@ -20,7 +20,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
     private TSPair currentSuggestion;
     private SchedulingState state; //1 when asking for suggestions, 2 when deciding timeslot
     private final Scheduler schedulerAgent;
-    private int currentMeeting;
+    private final int currentMeeting;
 
     public SchedulerContractNetInitiatorBehaviour(Scheduler scheduler, int currentMeeting) {
         super(scheduler, new ACLMessage(ACLMessage.CFP));
@@ -80,7 +80,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                         suggestions.add(new TSPair(content.getDay(), content.getTimeslot()));
 
                         // Logger
-                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED RESPONSE", content,"FROM", aclMessage.getSender());
+                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content,"FROM", aclMessage.getSender());
                     } catch (UnreadableException e) {
                         e.printStackTrace();
                     }
@@ -106,7 +106,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                         accept = content.getAcceptance();
 
                         // Logger
-                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED RESPONSE", content, "FROM", message.getSender());
+                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content, "FROM", message.getSender());
 
                     } catch (UnreadableException e) {
                         e.printStackTrace();

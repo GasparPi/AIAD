@@ -42,7 +42,7 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
             MessageContent respContent = new MessageContent();
 
             //Logger
-            this.employeeAgent.getLogger().logMessageContent("HANDLE CFP", cfpContent,"FROM", cfp.getSender());
+            this.employeeAgent.getLogger().logMessageContent("RECEIVED CFP", cfpContent,"FROM", cfp.getSender());
 
             respContent.setEmployeeId(employeeAgent.getId());
 
@@ -80,7 +80,7 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
             response.setContentObject(respContent);
 
             //Logger
-            this.employeeAgent.getLogger().logMessageContent("HANDLE CFP RESPONSE", respContent, "TO", cfp.getSender());
+            this.employeeAgent.getLogger().logMessageContent("SENDING PROPOSAL", respContent, "TO", cfp.getSender());
 
         } catch (UnreadableException | IOException e) {
             e.printStackTrace();
@@ -98,7 +98,7 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
             MessageContent proposeContent = (MessageContent) propose.getContentObject();
 
             //Logger
-            this.employeeAgent.getLogger().logMessageContent("HANDLE ACCEPT PROPOSAL", proposeContent, "FROM", propose.getSender());
+            this.employeeAgent.getLogger().logMessageContent("RECEIVED ACCEPT PROPOSAL", proposeContent, "FROM", propose.getSender());
 
             if (proposeContent.getAcceptance()){
                 response = new ACLMessage(ACLMessage.INFORM);
