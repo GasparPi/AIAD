@@ -54,6 +54,14 @@ public class Main {
     }
 
     public void setupData() {
+        //Setup Groups
+        try {
+            groups = GroupParser.parse(GROUPS_DIR + GROUPS_FILE);
+        } catch (IOException | ParseException e) {
+            System.err.println("Failed to parse groups file: " + GROUPS_DIR + GROUPS_FILE);
+            e.printStackTrace();
+        }
+
         //Setup Meetings
         try {
             meetings = MeetingParser.parse(MEETINGS_DIR + MEETINGS_FILE);
@@ -63,12 +71,9 @@ public class Main {
             return;
         }
 
-        //Setup Groups
-        try {
-            groups = GroupParser.parse(GROUPS_DIR + GROUPS_FILE);
-        } catch (IOException | ParseException e) {
-            System.err.println("Failed to parse groups file: " + GROUPS_DIR + GROUPS_FILE);
-            e.printStackTrace();
+        //Get total meetings for each group
+        for(Meeting m : meetings.values()){
+            groups.get(m.getGroupId()).incMeetings();
         }
     }
 
@@ -88,6 +93,14 @@ public class Main {
             e.printStackTrace();
         }
 
+        //Get total meetings for each employee
+        for(Group g : groups.values()){
+            for(int emp : g.getEmployees()){
+                employees.get(emp).addMeetings(g.getMeetings());
+            }
+        }
+
+        //Add employee agents to container
         for (Employee e : employees.values()) {
             AgentController agentController = this.container.acceptNewAgent(e.getStringId(), e);
             agentController.start();

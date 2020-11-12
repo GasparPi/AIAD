@@ -20,12 +20,14 @@ public class Employee extends Agent {
     private final HashMap<String, ArrayList<Timeslot>> agenda;
     private final ArrayList<TSPair> sortedAgenda;
     private final MyLogger logger;
+    private int meetings;
 
     public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda, String logDir) {
         this.id = id;
         this.agenda = agenda;
         this.sortedAgenda = this.sortAgendaByPreference();
         this.logger = new MyLogger(logDir, "Employee" + id);
+        this.meetings = 0;
     }
 
     public int getId() {
@@ -150,5 +152,11 @@ public class Employee extends Agent {
 
     public MyLogger getLogger() {
         return logger;
+    }
+
+    public void addMeetings(int m) { meetings += m; }
+
+    public int getMeetings() {
+        return meetings;
     }
 }
