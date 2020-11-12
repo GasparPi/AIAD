@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 public class EmployeeContractNetResponderBehaviour extends ContractNetResponder {
 
-    private final ArrayList<TSPair> timeslotPreference;
     private int currentSuggestion;
     private int meetingDuration;
     private final Employee employeeAgent;
@@ -23,7 +22,6 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
         super(employee, MessageTemplate.MatchPerformative(ACLMessage.CFP));
 
         this.employeeAgent = employee;
-        this.timeslotPreference = employee.getTimeSlotPreference();
         this.currentSuggestion = 0;
         this.meetingDuration = 0;
     }
@@ -35,6 +33,8 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
         response.addReceiver(cfp.getSender());
         response.setSender(employeeAgent.getAID());
 
+        ArrayList<TSPair> timeslotPreference = this.employeeAgent.sortAgendaByPreference();
+
         MessageContent cfpContent;
 
         try {
@@ -42,7 +42,7 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
             MessageContent respContent = new MessageContent();
 
             //Logger
-            this.employeeAgent.getLogger().logMessageContent("HANDLE CFP",cfpContent,"FROM", cfp.getSender());
+            this.employeeAgent.getLogger().logMessageContent("HANDLE CFP", cfpContent,"FROM", cfp.getSender());
 
             respContent.setEmployeeId(employeeAgent.getId());
 
@@ -105,6 +105,7 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
                 response.addReceiver(accept.getSender());
                 response.setSender(employeeAgent.getAID());
                 MessageContent acceptContent = (MessageContent) accept.getContentObject();
+
                 TSPair ts = new TSPair(acceptContent.getDay(), acceptContent.getTimeslot());
                 employeeAgent.removeAvailability(ts, meetingDuration);
                 response.setContentObject(respContent);

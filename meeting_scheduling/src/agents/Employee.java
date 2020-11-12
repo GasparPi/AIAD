@@ -11,6 +11,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+
 import java.util.*;
 
 public class Employee extends Agent {
@@ -18,14 +19,12 @@ public class Employee extends Agent {
 
     private final int id;
     private final HashMap<String, ArrayList<Timeslot>> agenda;
-    private final ArrayList<TSPair> sortedAgenda;
     private final MyLogger logger;
     private int meetings;
 
     public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda, String logDir) {
         this.id = id;
         this.agenda = agenda;
-        this.sortedAgenda = this.sortAgendaByPreference();
         this.logger = new MyLogger(logDir, "Employee" + id);
         this.meetings = 0;
     }
@@ -66,7 +65,7 @@ public class Employee extends Agent {
         try {
             this.register();
         } catch (FIPAException e) {
-            System.out.println("Failed to register agent in DF Service. Agent ID: " + this.id);
+            System.err.println("Failed to register agent in DF Service. Agent ID: " + this.id);
             e.printStackTrace();
             return;
         }
@@ -82,17 +81,23 @@ public class Employee extends Agent {
         serviceDescription.setName(getLocalName());
         dfAgentDescription.addServices(serviceDescription);
 
+        DFService.register(this, dfAgentDescription);
+
         //Logger
         this.logger.logInfo("REGISTERED IN DF SERVICE");
-
-        DFService.register(this, dfAgentDescription);
     }
 
-    public void removeAvailability(TSPair ts, int duration){
-        //TODO: remove <duration> timeslots from agenda, starting on <ts.day>,<ts.timeslot>
+    public void removeAvailability(TSPair ts, int duration) {
+        ArrayList<Timeslot> dayTimeSlots = this.agenda.get(ts.getDay());
+
+        // Remove duration slots
+        for (int i = 0; i < duration; i++)
+            dayTimeSlots.remove(ts.getTimeslot()-1);
+
+        this.agenda.put(ts.getDay(), dayTimeSlots);
     }
 
-    private ArrayList<TSPair> sortAgendaByPreference(){
+    public ArrayList<TSPair> sortAgendaByPreference(){
         ArrayList<TSPair> timeslots = new ArrayList<>();
 
         getDayOfWeekTimeslots("monday", timeslots);
@@ -144,10 +149,6 @@ public class Employee extends Agent {
         }
 
         return duration;
-    }
-
-    public ArrayList<TSPair> getTimeSlotPreference() {
-        return sortedAgenda;
     }
 
     public MyLogger getLogger() {
