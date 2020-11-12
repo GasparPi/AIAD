@@ -132,4 +132,15 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
 
         return response;
     }
+
+    @Override
+    public void handleOutOfSequence(ACLMessage message) {
+        try {
+            MessageContent content = (MessageContent) message.getContentObject();
+            //Logger
+            this.employeeAgent.getLogger().logMessageContent("OUT OF SEQUENCE",  content,  "FROM", message.getSender());
+        } catch (UnreadableException e) {
+            e.printStackTrace();
+        }
+    }
 }
