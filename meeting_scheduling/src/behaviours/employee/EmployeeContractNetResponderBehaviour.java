@@ -26,7 +26,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
         super(employee, cfp);
 
         this.employeeAgent = (Employee) employee;
-        this.timeslotPreference = employeeAgent.getSortedAgendaByPreference();
+        this.timeslotPreference = employeeAgent.sortAgendaByPreference();
         this.currentSuggestion = 0;
         this.meetingDuration = 0;
         conversationId = cfp.getConversationId();

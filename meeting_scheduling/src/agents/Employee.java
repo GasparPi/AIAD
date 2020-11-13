@@ -20,7 +20,6 @@ public class Employee extends Agent {
 
     private final int id;
     private final HashMap<String, ArrayList<Timeslot>> agenda;
-    private final ArrayList<TSPair> agendaSortedByPreference;
     private final MyLogger logger;
     private int meetings;
 
@@ -29,7 +28,6 @@ public class Employee extends Agent {
         this.agenda = agenda;
         this.logger = new MyLogger(logDir, "Employee" + id);
         this.meetings = 0;
-        this.agendaSortedByPreference = this.sortAgendaByPreference();
     }
 
     public int getId() {
@@ -101,14 +99,6 @@ public class Employee extends Agent {
         }
 
         this.agenda.put(ts.getDay(), dayTimeSlots);
-        this.updateSortedAgenda();
-    }
-
-    public void updateSortedAgenda() {
-        ArrayList<TSPair> sortedAgenda = this.sortAgendaByPreference();
-        Collections.copy(this.agendaSortedByPreference, sortedAgenda);
-        for (int i = sortedAgenda.size(); i < this.agendaSortedByPreference.size();)
-            this.agendaSortedByPreference.remove(i);
     }
 
     public ArrayList<TSPair> sortAgendaByPreference() {
@@ -170,10 +160,6 @@ public class Employee extends Agent {
     }
 
     public void addMeetings(int m) { meetings += m; }
-
-    public ArrayList<TSPair> getSortedAgendaByPreference() {
-        return this.agendaSortedByPreference;
-    }
 
     public int getMeetings() {
         return meetings;
