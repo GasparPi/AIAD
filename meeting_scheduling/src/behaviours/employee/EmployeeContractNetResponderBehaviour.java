@@ -26,7 +26,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
         super(employee, cfp);
 
         this.employeeAgent = (Employee) employee;
-        this.timeslotPreference = employeeAgent.sortAgendaByPreference();
+        this.timeslotPreference = employeeAgent.getSortedAgendaByPreference();
         this.currentSuggestion = 0;
         this.meetingDuration = 0;
         conversationId = cfp.getConversationId();
@@ -113,7 +113,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
                 MessageContent acceptContent = (MessageContent) accept.getContentObject();
 
                 TSPair ts = new TSPair(acceptContent.getDay(), acceptContent.getTimeslot());
-                //employeeAgent.removeAvailability(ts, meetingDuration);
+                employeeAgent.removeAvailability(ts, meetingDuration);
                 response.setContentObject(respContent);
 
                 //Logger

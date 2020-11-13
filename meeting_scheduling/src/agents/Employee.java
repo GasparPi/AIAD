@@ -12,6 +12,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 
+import java.sql.Time;
 import java.util.*;
 
 public class Employee extends Agent {
@@ -19,6 +20,7 @@ public class Employee extends Agent {
 
     private final int id;
     private final HashMap<String, ArrayList<Timeslot>> agenda;
+    private final ArrayList<TSPair> agendaSortedByPreference;
     private final MyLogger logger;
     private int meetings;
 
@@ -27,6 +29,7 @@ public class Employee extends Agent {
         this.agenda = agenda;
         this.logger = new MyLogger(logDir, "Employee" + id);
         this.meetings = 0;
+        this.agendaSortedByPreference = this.sortAgendaByPreference();
     }
 
     public int getId() {
@@ -91,13 +94,24 @@ public class Employee extends Agent {
         ArrayList<Timeslot> dayTimeSlots = this.agenda.get(ts.getDay());
 
         // Remove duration slots
-        for (int i = 0; i < duration; i++)
-            dayTimeSlots.remove(ts.getTimeslot()-1);
+        for (int i = 0; i < dayTimeSlots.size(); i++) {
+            if (dayTimeSlots.get(i).getSlotIdentifier() == ts.getTimeslot()) {
+                for (int j = 0; j < duration; j++) dayTimeSlots.remove(i);
+            }
+        }
 
         this.agenda.put(ts.getDay(), dayTimeSlots);
+        this.updateSortedAgenda();
     }
 
-    public ArrayList<TSPair> sortAgendaByPreference(){
+    public void updateSortedAgenda() {
+        ArrayList<TSPair> sortedAgenda = this.sortAgendaByPreference();
+        Collections.copy(this.agendaSortedByPreference, sortedAgenda);
+        for (int i = sortedAgenda.size(); i < this.agendaSortedByPreference.size();)
+            this.agendaSortedByPreference.remove(i);
+    }
+
+    public ArrayList<TSPair> sortAgendaByPreference() {
         ArrayList<TSPair> timeslots = new ArrayList<>();
 
         getDayOfWeekTimeslots("monday", timeslots);
@@ -156,6 +170,10 @@ public class Employee extends Agent {
     }
 
     public void addMeetings(int m) { meetings += m; }
+
+    public ArrayList<TSPair> getSortedAgendaByPreference() {
+        return this.agendaSortedByPreference;
+    }
 
     public int getMeetings() {
         return meetings;
