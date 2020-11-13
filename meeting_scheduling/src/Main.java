@@ -104,6 +104,11 @@ public class Main {
         for (Employee e : employees.values()) {
             AgentController agentController = this.container.acceptNewAgent(e.getStringId(), e);
             agentController.start();
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
         }
 
         // Setup Scheduler

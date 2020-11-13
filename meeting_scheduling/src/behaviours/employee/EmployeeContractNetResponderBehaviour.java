@@ -4,26 +4,32 @@ import agents.Employee;
 import behaviours.SchedulingState;
 import data.MessageContent;
 import data.TSPair;
+import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetResponder;
+import jade.proto.SSIteratedContractNetResponder;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class EmployeeContractNetResponderBehaviour extends ContractNetResponder {
+public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNetResponder {
 
     private int currentSuggestion;
     private int meetingDuration;
     private final Employee employeeAgent;
+    private final ArrayList<TSPair> timeslotPreference;
+    private final String conversationId;
 
-    public EmployeeContractNetResponderBehaviour(Employee employee) {
-        super(employee, MessageTemplate.MatchPerformative(ACLMessage.CFP));
+    public EmployeeContractNetResponderBehaviour(Agent employee, ACLMessage cfp) {
+        super(employee, cfp);
 
-        this.employeeAgent = employee;
+        this.employeeAgent = (Employee) employee;
+        this.timeslotPreference = employeeAgent.sortAgendaByPreference();
         this.currentSuggestion = 0;
         this.meetingDuration = 0;
+        conversationId = cfp.getConversationId();
     }
 
     @Override
@@ -32,8 +38,7 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
         ACLMessage response = new ACLMessage(ACLMessage.PROPOSE);
         response.addReceiver(cfp.getSender());
         response.setSender(employeeAgent.getAID());
-
-        ArrayList<TSPair> timeslotPreference = this.employeeAgent.sortAgendaByPreference();
+        response.setConversationId(conversationId);
 
         MessageContent cfpContent;
 
@@ -104,10 +109,11 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
                 response = new ACLMessage(ACLMessage.INFORM);
                 response.addReceiver(accept.getSender());
                 response.setSender(employeeAgent.getAID());
+                response.setConversationId(conversationId);
                 MessageContent acceptContent = (MessageContent) accept.getContentObject();
 
                 TSPair ts = new TSPair(acceptContent.getDay(), acceptContent.getTimeslot());
-                employeeAgent.removeAvailability(ts, meetingDuration);
+                //employeeAgent.removeAvailability(ts, meetingDuration);
                 response.setContentObject(respContent);
 
                 //Logger
@@ -121,6 +127,7 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
 
         response = new ACLMessage(ACLMessage.FAILURE);
         response.addReceiver(accept.getSender());
+        response.setConversationId(conversationId);
 
         try {
             response.setContentObject(respContent);
@@ -143,5 +150,11 @@ public class EmployeeContractNetResponderBehaviour extends ContractNetResponder 
         } catch (UnreadableException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public int onEnd() {
+        System.out.println("Responder for Employee " + employeeAgent.getId() + " fucking died.");
+        return super.onEnd();
     }
 }
