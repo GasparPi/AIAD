@@ -1,7 +1,6 @@
 package agents;
 
-import behaviours.GetEmployeeIDsBehaviour;
-import behaviours.SchedulerBehaviour;
+import behaviours.scheduler.SchedulerBehaviour;
 import data.Group;
 import data.Meeting;
 import jade.core.AID;
@@ -10,7 +9,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.lang.acl.ACLMessage;
+import logger.MyLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,17 +23,18 @@ public class Scheduler extends Agent {
     private final HashMap<Integer, Meeting> meetings;
     private final ArrayList<AID> agentsAIDs;
     private final HashMap<Integer, AID> employeeAIDs;
+    private final MyLogger logger;
 
-    public Scheduler(HashMap<Integer, Group> groups, HashMap<Integer, Meeting> meetings) {
+    public Scheduler(HashMap<Integer, Group> groups, HashMap<Integer, Meeting> meetings, String logsDir) {
         this.groups = groups;
         this.meetings = meetings;
         this.agentsAIDs = new ArrayList<>();
         this.employeeAIDs = new HashMap<>();
+        this.logger = new MyLogger(logsDir, ID);
     }
 
     @Override
     protected void setup() {
-
         try {
             this.searchEmployeeAIDs();
         } catch (FIPAException e) {
@@ -43,10 +43,7 @@ public class Scheduler extends Agent {
             return;
         }
 
-        addBehaviour(new GetEmployeeIDsBehaviour(this, this.agentsAIDs));
-        addBehaviour(new SchedulerBehaviour(this, new ACLMessage(ACLMessage.CFP)));
-
-        //TODO: commit suicide
+        addBehaviour(new SchedulerBehaviour(this));
     }
 
     public void searchEmployeeAIDs() throws FIPAException {
@@ -60,7 +57,9 @@ public class Scheduler extends Agent {
         for (DFAgentDescription agentDescription : searchResults) {
             AID aid = agentDescription.getName();
             this.agentsAIDs.add(aid);
-            System.out.println("Agent found. AID: " + aid.toString());
+
+            //Logger
+            this.logger.logInfo("FOUND AGENT IN DF SERVICE: AID: " + aid.getLocalName());
         }
     }
 
@@ -80,20 +79,19 @@ public class Scheduler extends Agent {
         return employeeAIDs;
     }
 
-    public boolean hasAllEmployeeIDs() {
-        return this.employeeAIDs.size() == this.agentsAIDs.size();
+    public ArrayList<AID> getAgentsAIDs() {
+        return this.agentsAIDs;
     }
 
     public void addEmployeeID(Integer id, AID aid) {
         this.employeeAIDs.put(id, aid);
     }
 
-    public boolean hasEmployeeID(AID aid) {
-        for (AID agentId : this.employeeAIDs.values()) {
-            if (agentId.equals(aid))
-                return true;
-        }
+    public boolean hasAllEmployeeIDs() {
+        return this.agentsAIDs.size() == this.employeeAIDs.size();
+    }
 
-        return false;
+    public MyLogger getLogger() {
+        return logger;
     }
 }

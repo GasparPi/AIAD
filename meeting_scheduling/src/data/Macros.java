@@ -8,19 +8,13 @@ public class Macros {
     public final static String FRIDAY = "friday";
 
     public static int dayOfWeekToNumber(String day){
-        switch(day){
-            case MONDAY:
-                return 1;
-            case TUESDAY:
-                return 2;
-            case WEDNESDAY:
-                return 3;
-            case THURSDAY:
-                return 4;
-            case FRIDAY:
-                return 5;
-            default:
-                return 0;
-        }
+        return switch (day) {
+            case MONDAY -> 1;
+            case TUESDAY -> 2;
+            case WEDNESDAY -> 3;
+            case THURSDAY -> 4;
+            case FRIDAY -> 5;
+            default -> 0;
+        };
     }
 }

@@ -1,17 +1,18 @@
 package agents;
 
-import behaviours.EmployeeBehaviour;
-import behaviours.EmployeeSendIDBehaviour;
+import behaviours.employee.EmployeeBehaviour;
 import data.Macros;
 import data.TSPair;
 import data.Timeslot;
+import logger.MyLogger;
+
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.lang.acl.MessageTemplate;
 
+import java.sql.Time;
 import java.util.*;
 
 public class Employee extends Agent {
@@ -19,18 +20,18 @@ public class Employee extends Agent {
 
     private final int id;
     private final HashMap<String, ArrayList<Timeslot>> agenda;
+    private final MyLogger logger;
+    private int meetings;
 
-    public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda) {
+    public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda, String logDir) {
         this.id = id;
         this.agenda = agenda;
+        this.logger = new MyLogger(logDir, "Employee" + id);
+        this.meetings = 0;
     }
 
     public int getId() {
         return id;
-    }
-
-    public HashMap<String, ArrayList<Timeslot>> getAgenda() {
-        return agenda;
     }
 
     @Override
@@ -44,15 +45,15 @@ public class Employee extends Agent {
     }
 
     private String agendaDayToString(String dayOfWeek){
-        String agendaDay = dayOfWeek + '\n';
+        StringBuilder agendaDay = new StringBuilder(dayOfWeek + '\n');
 
         ArrayList<Timeslot> timeslots = agenda.get(dayOfWeek);
 
         for(Timeslot timeslot : timeslots){
-            agendaDay = agendaDay + "   " + timeslot.toString() + '\n';
+            agendaDay.append("   ").append(timeslot.toString()).append('\n');
         }
 
-        return agendaDay;
+        return agendaDay.toString();
     }
 
     public String getStringId() {
@@ -65,15 +66,12 @@ public class Employee extends Agent {
         try {
             this.register();
         } catch (FIPAException e) {
-            System.out.println("Failed to register agent in DF Service. Agent ID: " + this.id);
+            System.err.println("Failed to register agent in DF Service. Agent ID: " + this.id);
             e.printStackTrace();
             return;
         }
 
-        ArrayList<TSPair> timeslotPreference = this.sortAgendaByPreference();
-
-        addBehaviour(new EmployeeSendIDBehaviour(this, MessageTemplate.MatchAll()));
-        //addBehaviour(new EmployeeBehaviour(this, MessageTemplate.MatchAll(), timeslotPreference));
+        addBehaviour(new EmployeeBehaviour(this));
     }
 
     private void register() throws FIPAException {
@@ -85,13 +83,25 @@ public class Employee extends Agent {
         dfAgentDescription.addServices(serviceDescription);
 
         DFService.register(this, dfAgentDescription);
+
+        //Logger
+        this.logger.logInfo("REGISTERED IN DF SERVICE");
     }
 
-    public void removeAvailability(TSPair ts, int duration){
-        //TODO: remove <duration> timeslots from agenda, starting on <ts.day>,<ts.timeslot>
+    public void removeAvailability(TSPair ts, int duration) {
+        ArrayList<Timeslot> dayTimeSlots = this.agenda.get(ts.getDay());
+
+        // Remove duration slots
+        for (int i = 0; i < dayTimeSlots.size(); i++) {
+            if (dayTimeSlots.get(i).getSlotIdentifier() == ts.getTimeslot()) {
+                for (int j = 0; j < duration; j++) dayTimeSlots.remove(i);
+            }
+        }
+
+        this.agenda.put(ts.getDay(), dayTimeSlots);
     }
 
-    public ArrayList<TSPair> sortAgendaByPreference(){
+    public ArrayList<TSPair> sortAgendaByPreference() {
         ArrayList<TSPair> timeslots = new ArrayList<>();
 
         getDayOfWeekTimeslots("monday", timeslots);
@@ -143,5 +153,15 @@ public class Employee extends Agent {
         }
 
         return duration;
+    }
+
+    public MyLogger getLogger() {
+        return logger;
+    }
+
+    public void addMeetings(int m) { meetings += m; }
+
+    public int getMeetings() {
+        return meetings;
     }
 }
