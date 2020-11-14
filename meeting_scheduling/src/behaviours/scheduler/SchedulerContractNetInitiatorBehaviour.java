@@ -38,9 +38,11 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
 
         cfp.clearAllReceiver();
 
+        /*
         for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
+         */
 
         switch (state) {
             case REQUEST_TIMESLOTS -> prepState1CFP(cfp);
@@ -74,7 +76,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
     protected void handleAllResponses(Vector responses, Vector acceptances) {
 
         Vector v = new Vector();
-        ACLMessage cfp = (ACLMessage) this.getDataStore().get(this.CFP_KEY);
+        ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 
         switch (state) {
             case REQUEST_TIMESLOTS -> {
@@ -208,11 +210,11 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
     }
 
     private void prepState1CFP(ACLMessage cfp) {
-        /*
+
         for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
-         */
+
         cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();
         content.setState(SchedulingState.REQUEST_TIMESLOTS);
@@ -233,11 +235,11 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
     }
 
     private void prepState2CFP(ACLMessage cfp) {
-        /*
+
         for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
-         */
+        
         cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();
         content.setState(SchedulingState.DECIDE_TIMESLOTS);
