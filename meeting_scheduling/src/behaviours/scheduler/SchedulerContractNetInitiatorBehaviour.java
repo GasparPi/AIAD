@@ -103,7 +103,6 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
 
                 }
                 if(suggestions.isEmpty()){
-                    System.out.println("No dice, yo");
                     ACLMessage rejectionMessage = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
 
                     MessageContent content = new MessageContent();
@@ -121,25 +120,20 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                         receivers.add(message.getSender());
                     }
                     rejectionMessage.setSender(schedulerAgent.getAID());
-                    rejectionMessage.setOntology("NOT_INIT");
                     rejectionMessage.setConversationId("MEETING" + currentMeeting);
                     responses.add(rejectionMessage);
                     this.schedulerAgent.getLogger().logMessageContent("PREPARED REJECT_PROPOSAL", content, "TO", receivers);
                     schedulerAgent.getMeetings().get(currentMeeting).schedule("NULL", -1, -1, new ArrayList<>());
-                    System.out.println("Meeting " + currentMeeting + " was not scheduled, moving on.");
                     ((SequentialBehaviour)getParent()).removeSubBehaviour(this);
                 }
                 else {
                     state = SchedulingState.DECIDE_TIMESLOTS;
                     prepState2CFP(cfp);
                     v.add(cfp);
-                    System.out.println("Prepared cfps for decide, yo");
                     newIteration(v);
-                    System.out.println("Passed newIteration, yo");
                 }
             }
             case DECIDE_TIMESLOTS -> {
-                System.out.println("We deciding now");
                 boolean acceptedByAll = true;
                 for (Object obj : responses) {
                     ACLMessage message = (ACLMessage) obj;
@@ -161,11 +155,9 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
 
                     if (!accept && schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees().contains(id)) {
                         acceptedByAll = false;
-                        System.out.println("Employee " + id + " didn't accept.");
                     }
                 }
                 if (acceptedByAll) {
-                    System.out.println("We accepted, yo");
                     ACLMessage acceptanceMessage = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 
                     MessageContent content = new MessageContent();
@@ -185,7 +177,6 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                         receivers.add(message.getSender());
                     }
                     acceptanceMessage.setSender(schedulerAgent.getAID());
-                    acceptanceMessage.setOntology("NOT_INIT");
                     acceptanceMessage.setConversationId("MEETING" + currentMeeting);
                     acceptances.add(acceptanceMessage);
                     this.schedulerAgent.getLogger().logMessageContent("PREPARED ACCEPT_PROPOSAL", content, "TO", receivers);
@@ -194,14 +185,11 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                     if (suggestions.isEmpty()) {
                         state = SchedulingState.REQUEST_TIMESLOTS;
                         prepState1CFP(cfp);
-                        System.out.println("Prepared cfps for re-request, yo");
                     } else {
                         prepState2CFP(cfp);
-                        System.out.println("Prepared cfps for re-decide, yo");
                     }
                     v.add(cfp);
                     newIteration(v);
-                    System.out.println("Passed newIteration, yo");
                 }
             }
             default -> {
@@ -238,14 +226,13 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
         boolean scheduledSuccessfully = true;
         for ( int i : currentMeetingObject.getObligatoryEmployees()){
             if (!acceptors.contains(i)){
-                System.out.println("Fucked up big time. yay.");
+                System.out.println("Something went dreadfully wrong.");
                 scheduledSuccessfully = false;
             }
         }
         if (scheduledSuccessfully){
             TSPair firstSuggestion = suggestions.get(0);
             currentMeetingObject.schedule(firstSuggestion.getDay(), firstSuggestion.getTimeslot(), firstSuggestion.getTimeslot() + currentMeetingObject.getDuration() - 1, acceptors);
-            System.out.println("Shit's scheduled for " + suggestions.get(0).getDay() + ", slot " + suggestions.get(0).getTimeslot() + ", yo");
         }
     }
 
@@ -265,11 +252,9 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
             e.printStackTrace();
         }
         if(initiating){
-            cfp.setOntology("INIT");
             initiating = false;
         }
         else{
-            cfp.setOntology("NOT_INIT");
         }
         cfp.setConversationId("MEETING" + currentMeeting);
     }
@@ -290,19 +275,6 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
         } catch (IOException e) {
             e.printStackTrace();
         }
-        cfp.setOntology("NOT_INIT");
         cfp.setConversationId("MEETING" + currentMeeting);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        System.out.println("Sched behv for meeting " + currentMeeting + " is on, babyyy");
-    }
-
-    @Override
-    public int onEnd() {
-        System.out.println("Sched behv for meeting " + currentMeeting + " left the chat");
-        return super.onEnd();
     }
 }

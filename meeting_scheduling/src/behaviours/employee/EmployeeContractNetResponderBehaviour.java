@@ -171,10 +171,4 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
             e.printStackTrace();
         }
     }
-
-    @Override
-    public int onEnd() {
-        System.out.println("Responder for Employee " + employeeAgent.getId() + " fucking died.");
-        return super.onEnd();
-    }
 }
