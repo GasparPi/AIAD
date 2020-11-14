@@ -5,6 +5,7 @@ import behaviours.SchedulingState;
 import data.MessageContent;
 import data.TSPair;
 import jade.core.AID;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
@@ -95,12 +96,40 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
 
 
                 }
-                state = SchedulingState.DECIDE_TIMESLOTS;
-                prepState2CFP(cfp);
-                v.add(cfp);
-                System.out.println("Prepared cfps for decide, yo");
-                newIteration(v);
-                System.out.println("Passed newIteration, yo");
+                if(suggestions.isEmpty()){
+                    System.out.println("No dice, yo");
+                    ACLMessage rejectionMessage = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
+
+                    MessageContent content = new MessageContent();
+                    content.setState(SchedulingState.DECIDE_TIMESLOTS);
+                    try {
+                        rejectionMessage.setContentObject(content);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    ArrayList<AID> receivers = new ArrayList<>();
+                    for (Object obj : responses) {
+                        ACLMessage message = (ACLMessage) obj;
+                        rejectionMessage.addReceiver(message.getSender());
+                        receivers.add(message.getSender());
+                    }
+                    rejectionMessage.setSender(schedulerAgent.getAID());
+                    rejectionMessage.setOntology("NOT_INIT");
+                    rejectionMessage.setConversationId("MEETING" + currentMeeting);
+                    responses.add(rejectionMessage);
+                    this.schedulerAgent.getLogger().logMessageContent("PREPARED REJECT_PROPOSAL", content, "TO", receivers);
+                    System.out.println("Meeting " + currentMeeting + "was not scheduled, moving on.");
+                    ((SequentialBehaviour)getParent()).removeSubBehaviour(this);
+                }
+                else {
+                    state = SchedulingState.DECIDE_TIMESLOTS;
+                    prepState2CFP(cfp);
+                    v.add(cfp);
+                    System.out.println("Prepared cfps for decide, yo");
+                    newIteration(v);
+                    System.out.println("Passed newIteration, yo");
+                }
             }
             case DECIDE_TIMESLOTS -> {
                 System.out.println("We deciding now");

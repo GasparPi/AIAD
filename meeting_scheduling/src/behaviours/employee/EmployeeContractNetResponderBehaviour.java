@@ -142,6 +142,18 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
     }
 
     @Override
+    protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
+
+        try {
+            MessageContent rejectContent = (MessageContent) reject.getContentObject();
+            this.employeeAgent.getLogger().logMessageContent("RECEIVED REJECT PROPOSAL", rejectContent, "FROM", reject.getSender());
+        } catch (UnreadableException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
     public void handleOutOfSequence(ACLMessage message) {
         try {
             MessageContent content = (MessageContent) message.getContentObject();
