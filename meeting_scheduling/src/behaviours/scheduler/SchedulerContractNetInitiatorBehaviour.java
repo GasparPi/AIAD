@@ -2,6 +2,7 @@ package behaviours.scheduler;
 
 import agents.Scheduler;
 import behaviours.SchedulingState;
+import data.Meeting;
 import data.MessageContent;
 import data.TSPair;
 import jade.core.AID;
@@ -175,6 +176,8 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
 
     @Override
     protected void handleAllResultNotifications(Vector resultNotifications) {
+        Meeting currentMeetingObject = schedulerAgent.getMeetings().get(currentMeeting);
+
         ArrayList<Integer> acceptors = new ArrayList<>();
         for (Object obj : resultNotifications){
             ACLMessage message = (ACLMessage) obj;
@@ -195,14 +198,15 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
         }
 
         boolean scheduledSuccessfully = true;
-        for ( int i : schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees()){
+        for ( int i : currentMeetingObject.getObligatoryEmployees()){
             if (!acceptors.contains(i)){
                 System.out.println("Fucked up big time. yay.");
                 scheduledSuccessfully = false;
             }
         }
         if (scheduledSuccessfully){
-            schedulerAgent.getMeetings().get(currentMeeting).schedule(suggestions.get(0).getDay(), suggestions.get(0).getTimeslot(), suggestions.get(0).getTimeslot() + schedulerAgent.getMeetings().get(currentMeeting).getDuration() - 1);
+            TSPair firstSuggestion = suggestions.get(0);
+            currentMeetingObject.schedule(firstSuggestion.getDay(), firstSuggestion.getTimeslot(), firstSuggestion.getTimeslot() + currentMeetingObject.getDuration() - 1, acceptors);
             System.out.println("Shit's scheduled for " + suggestions.get(0).getDay() + ", slot " + suggestions.get(0).getTimeslot() + ", yo");
         }
     }

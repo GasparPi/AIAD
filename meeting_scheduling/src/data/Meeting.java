@@ -11,6 +11,7 @@ public class Meeting {
     private String day;
     private int startSlot;
     private int endSlot;
+    private ArrayList<Integer> attendingEmployees;
 
     private final ArrayList<Integer> obligatoryEmployees;
 
@@ -25,10 +26,11 @@ public class Meeting {
         this.obligatoryEmployees.add(employeeId);
     }
 
-    public void schedule(String day, int startSlot, int endSlot) {
+    public void schedule(String day, int startSlot, int endSlot, ArrayList<Integer> attendingEmployees) {
         this.day = day;
         this.startSlot = startSlot;
         this.endSlot = endSlot;
+        this.attendingEmployees = attendingEmployees;
     }
 
     public int getId() {
@@ -69,5 +71,9 @@ public class Meeting {
             stringBuilder.append("\tEmployee id:").append(id).append("\n");
 
         return stringBuilder.toString();
+    }
+
+    public ArrayList<Integer> getAttendingEmployees() {
+        return attendingEmployees;
     }
 }

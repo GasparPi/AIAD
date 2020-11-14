@@ -2,6 +2,7 @@ package behaviours.employee;
 
 import agents.Employee;
 import behaviours.SchedulingState;
+import data.Meeting;
 import data.MessageContent;
 import data.TSPair;
 import jade.core.Agent;
@@ -100,17 +101,17 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
         MessageContent respContent = new MessageContent();
         respContent.setEmployeeId(employeeAgent.getId());
         try {
-            MessageContent proposeContent = (MessageContent) propose.getContentObject();
+            MessageContent acceptContent = (MessageContent) accept.getContentObject();
 
             //Logger
-            this.employeeAgent.getLogger().logMessageContent("RECEIVED ACCEPT PROPOSAL", proposeContent, "FROM", propose.getSender());
+            this.employeeAgent.getLogger().logMessageContent("RECEIVED ACCEPT PROPOSAL", acceptContent, "FROM", accept.getSender());
 
+            MessageContent proposeContent = (MessageContent) propose.getContentObject();
             if (proposeContent.getAcceptance()){
                 response = new ACLMessage(ACLMessage.INFORM);
                 response.addReceiver(accept.getSender());
                 response.setSender(employeeAgent.getAID());
                 response.setConversationId(conversationId);
-                MessageContent acceptContent = (MessageContent) accept.getContentObject();
 
                 TSPair ts = new TSPair(acceptContent.getDay(), acceptContent.getTimeslot());
                 employeeAgent.removeAvailability(ts, meetingDuration);
