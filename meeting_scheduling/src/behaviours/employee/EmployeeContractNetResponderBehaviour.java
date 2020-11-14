@@ -58,7 +58,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
 
                     meetingDuration = cfpContent.getMeetingDuration();
 
-                    while (timeslotPreference.get(currentSuggestion).getAvailableDuration() < cfpContent.getMeetingDuration() && currentSuggestion < timeslotPreference.size()){
+                    while (currentSuggestion < timeslotPreference.size() && timeslotPreference.get(currentSuggestion).getAvailableDuration() < cfpContent.getMeetingDuration()){
                         currentSuggestion++;
                     }
 
@@ -140,6 +140,18 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
         this.employeeAgent.getLogger().logMessageContent("RESPONSE TO ACCEPT PROPOSAL",  respContent,  "TO", accept.getSender());
 
         return response;
+    }
+
+    @Override
+    protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
+
+        try {
+            MessageContent rejectContent = (MessageContent) reject.getContentObject();
+            this.employeeAgent.getLogger().logMessageContent("RECEIVED REJECT PROPOSAL", rejectContent, "FROM", reject.getSender());
+        } catch (UnreadableException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

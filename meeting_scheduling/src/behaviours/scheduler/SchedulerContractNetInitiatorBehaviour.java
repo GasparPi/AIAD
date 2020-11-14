@@ -6,6 +6,7 @@ import data.Meeting;
 import data.MessageContent;
 import data.TSPair;
 import jade.core.AID;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
@@ -39,9 +40,11 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
 
         cfp.clearAllReceiver();
 
+        /*
         for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
+         */
 
         switch (state) {
             case REQUEST_TIMESLOTS -> prepState1CFP(cfp);
@@ -75,7 +78,10 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
     protected void handleAllResponses(Vector responses, Vector acceptances) {
 
         Vector v = new Vector();
-        ACLMessage cfp = (ACLMessage) this.getDataStore().get(this.CFP_KEY);
+        ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+
+        if(cfp == null)
+            System.out.println("CFP IS NULL : " + this.CFP_KEY);
 
         switch (state) {
             case REQUEST_TIMESLOTS -> {
@@ -94,12 +100,40 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
 
 
                 }
-                state = SchedulingState.DECIDE_TIMESLOTS;
-                prepState2CFP(cfp);
-                v.add(cfp);
-                System.out.println("Prepared cfps for decide, yo");
-                newIteration(v);
-                System.out.println("Passed newIteration, yo");
+                if(suggestions.isEmpty()){
+                    System.out.println("No dice, yo");
+                    ACLMessage rejectionMessage = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
+
+                    MessageContent content = new MessageContent();
+                    content.setState(SchedulingState.DECIDE_TIMESLOTS);
+                    try {
+                        rejectionMessage.setContentObject(content);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    ArrayList<AID> receivers = new ArrayList<>();
+                    for (Object obj : responses) {
+                        ACLMessage message = (ACLMessage) obj;
+                        rejectionMessage.addReceiver(message.getSender());
+                        receivers.add(message.getSender());
+                    }
+                    rejectionMessage.setSender(schedulerAgent.getAID());
+                    rejectionMessage.setOntology("NOT_INIT");
+                    rejectionMessage.setConversationId("MEETING" + currentMeeting);
+                    responses.add(rejectionMessage);
+                    this.schedulerAgent.getLogger().logMessageContent("PREPARED REJECT_PROPOSAL", content, "TO", receivers);
+                    System.out.println("Meeting " + currentMeeting + "was not scheduled, moving on.");
+                    ((SequentialBehaviour)getParent()).removeSubBehaviour(this);
+                }
+                else {
+                    state = SchedulingState.DECIDE_TIMESLOTS;
+                    prepState2CFP(cfp);
+                    v.add(cfp);
+                    System.out.println("Prepared cfps for decide, yo");
+                    newIteration(v);
+                    System.out.println("Passed newIteration, yo");
+                }
             }
             case DECIDE_TIMESLOTS -> {
                 System.out.println("We deciding now");
@@ -212,11 +246,11 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
     }
 
     private void prepState1CFP(ACLMessage cfp) {
-        /*
+
         for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
-         */
+
         cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();
         content.setState(SchedulingState.REQUEST_TIMESLOTS);
@@ -237,11 +271,11 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
     }
 
     private void prepState2CFP(ACLMessage cfp) {
-        /*
+
         for (int id : schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).getEmployees()) {
             cfp.addReceiver(schedulerAgent.getEmployeeAIDs().get(id));
         }
-         */
+        
         cfp.setSender(schedulerAgent.getAID());
         MessageContent content = new MessageContent();
         content.setState(SchedulingState.DECIDE_TIMESLOTS);
