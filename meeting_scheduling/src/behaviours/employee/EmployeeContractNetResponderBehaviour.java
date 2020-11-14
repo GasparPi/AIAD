@@ -57,7 +57,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
 
                     meetingDuration = cfpContent.getMeetingDuration();
 
-                    while (timeslotPreference.get(currentSuggestion).getAvailableDuration() < cfpContent.getMeetingDuration() && currentSuggestion < timeslotPreference.size()){
+                    while (currentSuggestion < timeslotPreference.size() && timeslotPreference.get(currentSuggestion).getAvailableDuration() < cfpContent.getMeetingDuration()){
                         currentSuggestion++;
                     }
 

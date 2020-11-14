@@ -37,6 +37,8 @@ public class MeetingsGenerator {
 
                 meetingObject.put("group", group);
 
+                System.out.println("GROUP: " + group);
+
                 meetingObject.put("obligatory-employees", generateObligatoryEmployees(groups.get(group)));
 
                 finalObject.add(meetingObject);
@@ -54,16 +56,15 @@ public class MeetingsGenerator {
     }
 
     private static ArrayList<Integer> generateObligatoryEmployees(ArrayList<Integer> employees) {
+        System.out.println("EMPLOYEES OBLIGATORY INITIAL: " + employees.toString());
         ArrayList<Integer> aux = new ArrayList<>();
         aux.addAll(employees);
-        int numberOfEmployees = 1 + (int) (Math.random() * aux.size());
 
-        if(numberOfEmployees == aux.size())
-            return aux;
+        int numberOfObligatoryEmployees = aux.size() > 3 ? aux.size()/2 : 2;
 
         ArrayList<Integer> obligatoryEmployees = new ArrayList<>();
 
-        for(int i = 0; i < numberOfEmployees; i++){
+        for(int i = 0; i < numberOfObligatoryEmployees; i++){
             int j = (int) (Math.random() * aux.size());
             obligatoryEmployees.add(aux.get(j));
             aux.remove(j);

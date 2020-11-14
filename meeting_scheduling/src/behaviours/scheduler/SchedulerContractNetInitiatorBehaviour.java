@@ -78,6 +78,9 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
         Vector v = new Vector();
         ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 
+        if(cfp == null)
+            System.out.println("CFP IS NULL : " + this.CFP_KEY);
+
         switch (state) {
             case REQUEST_TIMESLOTS -> {
                 for (Object obj : responses) {

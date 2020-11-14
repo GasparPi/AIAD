@@ -55,7 +55,7 @@ public class GroupsGenerator {
         ArrayList<Integer> aux = new ArrayList<>();
         aux.addAll(employeeArray);
         ArrayList<Integer> employees = new ArrayList<>();
-        int numberOfEmployees = 1 + (int) (Math.random() * aux.size());
+        int numberOfEmployees = 2 + (int) (Math.random() * (aux.size() - 1));
 
         if(numberOfEmployees == aux.size())
             return aux;
