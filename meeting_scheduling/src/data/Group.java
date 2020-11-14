@@ -5,13 +5,11 @@ import java.util.ArrayList;
 public class Group {
 
     private final int id;
-    private final String name;
 
     ArrayList<Integer> employees;
 
-    public Group(int id, String name) {
+    public Group(int id) {
         this.id = id;
-        this.name = name;
         this.employees = new ArrayList<>();
     }
 
@@ -23,9 +21,6 @@ public class Group {
         return this.id;
     }
 
-    public String getName() {
-        return this.name;
-    }
 
     public ArrayList<Integer> getEmployees() {
         return this.employees;
@@ -35,7 +30,7 @@ public class Group {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Group id: ").append(this.id).append("; name: ").append(this.name).append("\n");
+        stringBuilder.append("Group id: ").append(this.id).append("\n");
 
         for (Integer id : this.employees)
             stringBuilder.append("\tEmployee id:").append(id).append("\n");

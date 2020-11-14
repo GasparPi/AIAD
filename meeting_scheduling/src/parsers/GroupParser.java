@@ -23,9 +23,8 @@ public class GroupParser {
             JSONObject jsonObject = (JSONObject) obj;
 
             int id = Integer.parseInt(jsonObject.get("id").toString());
-            String name = jsonObject.get("name").toString();
 
-            Group group = new Group(id, name);
+            Group group = new Group(id);
             groups.put(group.getId(), group);
 
             // Employees

@@ -9,11 +9,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class EmployeesGenerator {
-    final static String GENERATED_DIR = "../../generated/";
+    final static String GENERATED_DIR = "problem_generator/generated/";
 
     public static boolean generate(String fileCode, Integer numberOfEmployees){
         try {
-            File file = new File(fileCode + "_employees.json");
+            File file = new File(GENERATED_DIR + fileCode + "_employees.json");
 
             if(!file.createNewFile()){
                 System.out.println("File already exists");

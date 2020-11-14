@@ -18,9 +18,9 @@ public class Main {
     final static String GROUPS_DIR = "meeting_scheduling/vars/groups/";
     final static String MEETINGS_DIR = "meeting_scheduling/vars/meetings/";
 
-    final static String EMPLOYEES_FILE = "e1.json";
-    final static String GROUPS_FILE = "g1.json";
-    final static String MEETINGS_FILE = "m1.json";
+    final static String EMPLOYEES_FILE = "example1_employees.json";
+    final static String GROUPS_FILE = "example1_groups.json";
+    final static String MEETINGS_FILE = "example1_meetings.json";
 
     HashMap<Integer, Employee> employees;
     HashMap<Integer, Meeting> meetings;
