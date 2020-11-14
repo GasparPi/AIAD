@@ -58,13 +58,20 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
 
                     meetingDuration = cfpContent.getMeetingDuration();
 
-                    while (currentSuggestion < timeslotPreference.size() && timeslotPreference.get(currentSuggestion).getAvailableDuration() < cfpContent.getMeetingDuration()){
-                        currentSuggestion++;
+
+                    while (currentSuggestion < timeslotPreference.size()){
+                        if(timeslotPreference.get(currentSuggestion).getAvailableDuration() < cfpContent.getMeetingDuration()) {
+                            currentSuggestion++;
+                        }
+                        else {
+                            break;
+                        }
                     }
 
                     if (currentSuggestion < timeslotPreference.size()){
                         respContent.setDay(timeslotPreference.get(currentSuggestion).getDay());
                         respContent.setTimeslot(timeslotPreference.get(currentSuggestion).getTimeslot());
+                        currentSuggestion++;
                     }
                 }
                 case DECIDE_TIMESLOTS -> {

@@ -90,7 +90,9 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                     MessageContent content;
                     try {
                         content = (MessageContent) aclMessage.getContentObject();
-                        suggestions.add(new TSPair(content.getDay(), content.getTimeslot()));
+                        if(!content.getDay().equals("") && content.getTimeslot() != -1) {
+                            suggestions.add(new TSPair(content.getDay(), content.getTimeslot()));
+                        }
 
                         // Logger
                         this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content,"FROM", aclMessage.getSender());
@@ -123,7 +125,8 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                     rejectionMessage.setConversationId("MEETING" + currentMeeting);
                     responses.add(rejectionMessage);
                     this.schedulerAgent.getLogger().logMessageContent("PREPARED REJECT_PROPOSAL", content, "TO", receivers);
-                    System.out.println("Meeting " + currentMeeting + "was not scheduled, moving on.");
+                    schedulerAgent.getMeetings().get(currentMeeting).schedule("NULL", -1, -1, new ArrayList<>());
+                    System.out.println("Meeting " + currentMeeting + " was not scheduled, moving on.");
                     ((SequentialBehaviour)getParent()).removeSubBehaviour(this);
                 }
                 else {
@@ -191,11 +194,12 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                     if (suggestions.isEmpty()) {
                         state = SchedulingState.REQUEST_TIMESLOTS;
                         prepState1CFP(cfp);
+                        System.out.println("Prepared cfps for re-request, yo");
                     } else {
                         prepState2CFP(cfp);
+                        System.out.println("Prepared cfps for re-decide, yo");
                     }
                     v.add(cfp);
-                    System.out.println("Prepared cfps for re-request, yo");
                     newIteration(v);
                     System.out.println("Passed newIteration, yo");
                 }

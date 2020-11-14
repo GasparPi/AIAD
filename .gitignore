@@ -32,3 +32,6 @@ MTPs-Main-Container.txt
 
 # Log files
 logs/
+
+# Outputs
+meeting_scheduling/results/
