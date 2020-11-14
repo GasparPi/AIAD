@@ -13,10 +13,9 @@ import java.io.IOException;
 
 public class SaveResultsBehaviour extends Behaviour {
 
-    private static final String RESULTS_DIR = "meeting_scheduling/results/" + System.currentTimeMillis() + "/";
+    private static final String RESULTS_DIR = "meeting_scheduling/results/";
+    private static final String CURRENT_RESULTS_DIR = System.currentTimeMillis() + "/";
     private static final String MEETINGS_RESULTS_FILE = "meetings.json";
-    private static final String GROUPS_RESULTS_FILE = "groups.json";
-    private static final String EMPLOYEES_RESULTS_FILE = "employees.json";
 
     private final Scheduler scheduler;
     private boolean savedResults = false;
@@ -32,13 +31,16 @@ public class SaveResultsBehaviour extends Behaviour {
         if (!resultsDir.exists())
             resultsDir.mkdir();
 
+        File currentResultsDir = new File(RESULTS_DIR + CURRENT_RESULTS_DIR);
+        currentResultsDir.mkdir();
+
         this.saveMeetingsResults();
 
         this.savedResults = true;
     }
 
     private void saveMeetingsResults() {
-        File resultsFile = new File(RESULTS_DIR + MEETINGS_RESULTS_FILE);
+        File resultsFile = new File(RESULTS_DIR + CURRENT_RESULTS_DIR + MEETINGS_RESULTS_FILE);
 
         FileWriter fileWriter;
         try {
