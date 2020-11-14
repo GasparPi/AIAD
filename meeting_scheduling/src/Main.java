@@ -23,10 +23,6 @@ public class Main {
 
     final static String LOGS_DIR = "logs/";
 
-    final static String EMPLOYEES_FILE = "e1.json";
-    final static String GROUPS_FILE = "g1.json";
-    final static String MEETINGS_FILE = "m1.json";
-
     HashMap<Integer, Employee> employees;
     HashMap<Integer, Meeting> meetings;
     HashMap<Integer, Group> groups;
@@ -37,12 +33,16 @@ public class Main {
     ContainerController container;
 
     public static void main(String[] args) {
-        Main main = new Main();
+        if (args.length != 3) {
+            System.err.println("Usage: Main <groups_filename> <meetings_filename> <employees_filename>\n" +
+                    "Note: this files should be located in their respective directory under meeting_scheduling/vars/");
+        }
 
-        main.setupData();
+        Main main = new Main();
+        main.setupData(args[0], args[1]);
 
         try {
-            main.setupAgents();
+            main.setupAgents(args[2]);
         } catch (StaleProxyException e) {
             System.err.println("Failed to setup Employee Agents");
             e.printStackTrace();
@@ -53,31 +53,33 @@ public class Main {
         main.printInfo();
     }
 
-    public void setupData() {
+    public void setupData(String groupsFile, String meetingsFile) {
         //Setup Groups
         try {
-            groups = GroupParser.parse(GROUPS_DIR + GROUPS_FILE);
+            groups = GroupParser.parse(GROUPS_DIR + groupsFile);
         } catch (IOException | ParseException e) {
-            System.err.println("Failed to parse groups file: " + GROUPS_DIR + GROUPS_FILE);
+            System.err.println("Failed to parse groups file: " + GROUPS_DIR + groupsFile +
+                    ". Make sure the file is located at meeting_scheduling/vars/groups");
             e.printStackTrace();
         }
 
         //Setup Meetings
         try {
-            meetings = MeetingParser.parse(MEETINGS_DIR + MEETINGS_FILE);
+            meetings = MeetingParser.parse(MEETINGS_DIR + meetingsFile);
         } catch (IOException | ParseException e) {
-            System.err.println("Failed to parse meetings file: " + MEETINGS_DIR + MEETINGS_FILE);
+            System.err.println("Failed to parse meetings file: " + MEETINGS_DIR + meetingsFile +
+                    ". Make sure the file is located at meeting_scheduling/vars/meetings");
             e.printStackTrace();
             return;
         }
 
         //Get total meetings for each group
-        for(Meeting m : meetings.values()){
+        for (Meeting m : meetings.values()){
             groups.get(m.getGroupId()).incMeetings();
         }
     }
 
-    public void setupAgents() throws StaleProxyException {
+    public void setupAgents(String employeesFile) throws StaleProxyException {
         this.runtime = Runtime.instance();
         this.profile = new ProfileImpl();
         this.profile.setParameter(Profile.GUI, "true");
@@ -87,15 +89,16 @@ public class Main {
 
         //Setup employees
         try {
-            employees = EmployeeParser.parse(EMPLOYEES_DIR + EMPLOYEES_FILE, LOGS_DIR);
+            employees = EmployeeParser.parse(EMPLOYEES_DIR + employeesFile, LOGS_DIR);
         } catch (IOException | ParseException e) {
-            System.err.println("Failed to parse employees file: " + EMPLOYEES_DIR + EMPLOYEES_FILE);
+            System.err.println("Failed to parse employees file: " + EMPLOYEES_DIR + employeesFile +
+                    ". Make sure the file is located at meeting_scheduling/vars/employees");
             e.printStackTrace();
         }
 
         //Get total meetings for each employee
-        for(Group g : groups.values()){
-            for(int emp : g.getEmployees()){
+        for (Group g : groups.values()){
+            for (int emp : g.getEmployees()){
                 employees.get(emp).addMeetings(g.getMeetings());
             }
         }
