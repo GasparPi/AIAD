@@ -16,7 +16,7 @@ public class EmployeesGenerator {
             File file = new File(GENERATED_DIR + fileCode + "_employees.json");
 
             if(!file.createNewFile()){
-                System.out.println("File already exists");
+                System.err.println("File already exists");
                 return false;
             }
 
@@ -37,7 +37,7 @@ public class EmployeesGenerator {
 
             fileWriter.close();
         } catch (IOException e) {
-            System.out.println("Failed to open file");
+            System.err.println("Failed to open file");
             return false;
         }
 

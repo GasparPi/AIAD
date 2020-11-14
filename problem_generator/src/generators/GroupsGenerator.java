@@ -17,7 +17,7 @@ public class GroupsGenerator {
             File file = new File(GENERATED_DIR + fileCode + "_groups.json");
 
             if(!file.createNewFile()){
-                System.out.println("File already exists");
+                System.err.println("File already exists");
                 return null;
             }
 
@@ -46,7 +46,7 @@ public class GroupsGenerator {
 
             return groups;
         } catch (IOException e) {
-            System.out.println("Failed to open file");
+            System.err.println("Failed to open file");
             return null;
         }
     }

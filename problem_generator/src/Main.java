@@ -7,8 +7,9 @@ import java.util.HashMap;
 
 public class Main {
     public static void main(String[] args){
-        if(args.length < 2 && args.length > 4){
-            System.out.println();
+        if(args.length < 2 || args.length > 4){
+            System.err.println("Usage: Main <file name> <number of employees> <number of groups> <number of meetings>");
+            return;
         }
 
         String fileCode = args[0];

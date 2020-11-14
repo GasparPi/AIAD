@@ -17,7 +17,7 @@ public class MeetingsGenerator {
             File file = new File(GENERATED_DIR + fileCode + "_meetings.json");
 
             if(!file.createNewFile()){
-                System.out.println("File already exists");
+                System.err.println("File already exists");
                 return false;
             }
 
@@ -37,8 +37,6 @@ public class MeetingsGenerator {
 
                 meetingObject.put("group", group);
 
-                System.out.println("GROUP: " + group);
-
                 meetingObject.put("obligatory-employees", generateObligatoryEmployees(groups.get(group)));
 
                 finalObject.add(meetingObject);
@@ -48,7 +46,7 @@ public class MeetingsGenerator {
 
             fileWriter.close();
         } catch (IOException e) {
-            System.out.println("Failed to open file");
+            System.err.println("Failed to open file");
             return false;
         }
 
@@ -56,7 +54,6 @@ public class MeetingsGenerator {
     }
 
     private static ArrayList<Integer> generateObligatoryEmployees(ArrayList<Integer> employees) {
-        System.out.println("EMPLOYEES OBLIGATORY INITIAL: " + employees.toString());
         ArrayList<Integer> aux = new ArrayList<>();
         aux.addAll(employees);
 
