@@ -1,0 +1,31 @@
+[
+  {
+    "duration": 3,
+    "obligatory-employees": [
+      1,
+      8,
+      5
+    ],
+    "id": 1,
+    "group": 3
+  },
+  {
+    "duration": 2,
+    "obligatory-employees": [
+      1,
+      8,
+      4
+    ],
+    "id": 2,
+    "group": 3
+  },
+  {
+    "duration": 2,
+    "obligatory-employees": [
+      8,
+      1
+    ],
+    "id": 3,
+    "group": 1
+  }
+]
