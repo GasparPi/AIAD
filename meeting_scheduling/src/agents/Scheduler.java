@@ -3,9 +3,9 @@ package agents;
 import behaviours.scheduler.SchedulerBehaviour;
 import data.Group;
 import data.Meeting;
-import jade.core.AID;
-import jade.core.Agent;
-import jade.domain.DFService;
+import sajas.core.AID;
+import sajas.core.Agent;
+import sajas.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
@@ -55,7 +55,7 @@ public class Scheduler extends Agent {
         DFAgentDescription[] searchResults = DFService.search(this, template);
 
         for (DFAgentDescription agentDescription : searchResults) {
-            AID aid = agentDescription.getName();
+            AID aid = (AID) agentDescription.getName();
             this.agentsAIDs.add(aid);
 
             //Logger

@@ -2,8 +2,8 @@ import agents.Employee;
 import agents.Scheduler;
 import data.Group;
 import data.Meeting;
+
 import jade.core.Profile;
-import jade.tools.sniffer.Sniffer;
 import jade.wrapper.StaleProxyException;
 import org.json.simple.parser.ParseException;
 import parsers.*;
@@ -12,16 +12,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import jade.core.ProfileImpl;
-import jade.core.Runtime;
-import jade.wrapper.AgentController;
-import jade.wrapper.ContainerController;
+import sajas.core.Runtime;
+import sajas.sim.repast3.Repast3Launcher;
+import sajas.wrapper.AgentController;
+import sajas.wrapper.ContainerController;
 
-public class Main {
+
+public class Main extends Repast3Launcher {
     final static String EMPLOYEES_DIR = "meeting_scheduling/vars/employees/";
     final static String GROUPS_DIR = "meeting_scheduling/vars/groups/";
     final static String MEETINGS_DIR = "meeting_scheduling/vars/meetings/";
 
     final static String LOGS_DIR = "logs/";
+    private final String groupsFile;
+    private final String meetingsFile;
+    private final String employeesFile;
 
     HashMap<Integer, Employee> employees;
     HashMap<Integer, Meeting> meetings;
@@ -32,25 +37,28 @@ public class Main {
     ProfileImpl profile;
     ContainerController container;
 
+    public Main(String groupsFile, String meetingsFile, String employeesFile) {
+        super();
+
+        this.groupsFile = groupsFile;
+        this.meetingsFile = meetingsFile;
+        this.employeesFile = employeesFile;
+
+        this.setupData(groupsFile, meetingsFile);
+
+        this.deletePreviousLogs();
+        this.printInfo();
+    }
+
     public static void main(String[] args) {
         if (args.length != 3) {
             System.err.println("Usage: Main <groups_filename> <meetings_filename> <employees_filename>\n" +
                     "Note: this files should be located in their respective directory under meeting_scheduling/vars/");
         }
 
-        Main main = new Main();
-        main.setupData(args[0], args[1]);
-
-        try {
-            main.setupAgents(args[2]);
-        } catch (StaleProxyException e) {
-            System.err.println("Failed to setup Employee Agents");
-            e.printStackTrace();
-            return;
-        }
-
-        main.deletePreviousLogs();
-        main.printInfo();
+        SimInit init = new SimInit();
+        init.setNumRuns(1);   // works only in batch mode
+        init.loadModel(new Main(args[0], args[1], args[2]), null, true);
     }
 
     public void setupData(String groupsFile, String meetingsFile) {
@@ -61,6 +69,7 @@ public class Main {
             System.err.println("Failed to parse groups file: " + GROUPS_DIR + groupsFile +
                     ". Make sure the file is located at meeting_scheduling/vars/groups");
             e.printStackTrace();
+            return;
         }
 
         //Setup Meetings
@@ -84,8 +93,6 @@ public class Main {
         this.profile = new ProfileImpl();
         this.profile.setParameter(Profile.GUI, "true");
         this.container = this.runtime.createMainContainer(this.profile);
-
-        this.setupDebugMode();
 
         //Setup employees
         try {
@@ -134,17 +141,6 @@ public class Main {
         }
     }
 
-    private void setupDebugMode() {
-        Sniffer sniffer = new Sniffer();
-
-        try {
-            AgentController agentController = this.container.acceptNewAgent("sniffer", sniffer);
-            agentController.start();
-        } catch (StaleProxyException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void deletePreviousLogs() {
         File logDir = new File(LOGS_DIR);
         if (logDir.exists())
@@ -159,5 +155,16 @@ public class Main {
             }
         }
         dir.delete();
+    }
+
+    @Override
+    protected void launchJADE() {
+        try {
+            this.setupAgents(employeesFile);
+        } catch (StaleProxyException e) {
+            System.err.println("Failed to setup Employee Agents");
+            e.printStackTrace();
+            return;
+        }
     }
 }

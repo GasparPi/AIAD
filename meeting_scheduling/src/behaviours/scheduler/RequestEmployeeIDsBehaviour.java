@@ -2,8 +2,8 @@ package behaviours.scheduler;
 
 import agents.Scheduler;
 import data.MessageContent;
-import jade.core.AID;
-import jade.core.behaviours.Behaviour;
+import sajas.core.AID;
+import sajas.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.tools.sniffer.Message;
 

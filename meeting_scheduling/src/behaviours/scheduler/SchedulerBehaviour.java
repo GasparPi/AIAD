@@ -1,7 +1,7 @@
 package behaviours.scheduler;
 
 import agents.Scheduler;
-import jade.core.behaviours.SequentialBehaviour;
+import sajas.core.behaviours.SequentialBehaviour;
 
 public class SchedulerBehaviour extends SequentialBehaviour {
 

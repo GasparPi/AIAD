@@ -5,11 +5,11 @@ import behaviours.SchedulingState;
 import data.Meeting;
 import data.MessageContent;
 import data.TSPair;
-import jade.core.AID;
-import jade.core.behaviours.SequentialBehaviour;
+import sajas.core.AID;
+import sajas.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
-import jade.proto.ContractNetInitiator;
+import sajas.proto.ContractNetInitiator;
 import jade.util.leap.Iterator;
 
 import java.io.IOException;
@@ -95,7 +95,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                         }
 
                         // Logger
-                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content,"FROM", aclMessage.getSender());
+                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content,"FROM", (AID) aclMessage.getSender());
                     } catch (UnreadableException e) {
                         e.printStackTrace();
                     }
@@ -117,7 +117,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                     for (Object obj : responses) {
                         ACLMessage message = (ACLMessage) obj;
                         rejectionMessage.addReceiver(message.getSender());
-                        receivers.add(message.getSender());
+                        receivers.add((AID) message.getSender());
                     }
                     rejectionMessage.setSender(schedulerAgent.getAID());
                     rejectionMessage.setConversationId("MEETING" + currentMeeting);
@@ -147,7 +147,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                         accept = content.getAcceptance();
 
                         // Logger
-                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content, "FROM", message.getSender());
+                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content, "FROM", (AID) message.getSender());
 
                     } catch (UnreadableException e) {
                         e.printStackTrace();
@@ -174,7 +174,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                     for (Object obj : responses) {
                         ACLMessage message = (ACLMessage) obj;
                         acceptanceMessage.addReceiver(message.getSender());
-                        receivers.add(message.getSender());
+                        receivers.add((AID) message.getSender());
                     }
                     acceptanceMessage.setSender(schedulerAgent.getAID());
                     acceptanceMessage.setConversationId("MEETING" + currentMeeting);
@@ -212,7 +212,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                 MessageContent content = (MessageContent) message.getContentObject();
 
                 // Logger
-                this.schedulerAgent.getLogger().logMessageContent("RECEIVED RESULT NOTIFICATION", content, "FROM", message.getSender());
+                this.schedulerAgent.getLogger().logMessageContent("RECEIVED RESULT NOTIFICATION", content, "FROM", (AID) message.getSender());
 
                 if (message.getPerformative() == ACLMessage.INFORM)
                     acceptors.add(content.getEmployeeId());

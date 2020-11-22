@@ -1,7 +1,7 @@
 package behaviours.employee;
 
 import agents.Employee;
-import jade.core.behaviours.SequentialBehaviour;
+import sajas.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 

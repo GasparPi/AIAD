@@ -1,11 +1,10 @@
 package behaviours.employee;
 
-import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.SimpleBehaviour;
+import sajas.core.Agent;
+import sajas.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.proto.SSResponderDispatcher;
+import sajas.proto.SSResponderDispatcher;
 
 public class EmployeeResponderDispatcherBehaviour extends SSResponderDispatcher {
 

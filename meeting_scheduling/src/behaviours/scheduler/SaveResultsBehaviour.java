@@ -3,7 +3,7 @@ package behaviours.scheduler;
 import agents.Scheduler;
 import data.Group;
 import data.Meeting;
-import jade.core.behaviours.Behaviour;
+import sajas.core.behaviours.Behaviour;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
