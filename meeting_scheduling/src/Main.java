@@ -43,11 +43,6 @@ public class Main extends Repast3Launcher {
         this.groupsFile = groupsFile;
         this.meetingsFile = meetingsFile;
         this.employeesFile = employeesFile;
-
-        this.setupData(groupsFile, meetingsFile);
-
-        this.deletePreviousLogs();
-        this.printInfo();
     }
 
     public static void main(String[] args) {
@@ -159,6 +154,8 @@ public class Main extends Repast3Launcher {
 
     @Override
     protected void launchJADE() {
+        this.setupData(groupsFile, meetingsFile);
+
         try {
             this.setupAgents(employeesFile);
         } catch (StaleProxyException e) {
@@ -166,5 +163,8 @@ public class Main extends Repast3Launcher {
             e.printStackTrace();
             return;
         }
+
+        this.deletePreviousLogs();
+        this.printInfo();
     }
 }
