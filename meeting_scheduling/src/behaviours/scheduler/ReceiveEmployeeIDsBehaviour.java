@@ -1,7 +1,7 @@
 package behaviours.scheduler;
 
 import agents.Scheduler;
-import sajas.core.AID;
+import jade.core.AID;
 import sajas.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -21,9 +21,9 @@ public class ReceiveEmployeeIDsBehaviour extends Behaviour {
         if (msg != null) {
 
             // Logger
-            this.scheduler.getLogger().logMessageContent("RECEIVED INFORM", msg.getContent(),"FROM", (AID) msg.getSender());
+            this.scheduler.getLogger().logMessageContent("RECEIVED INFORM", msg.getContent(),"FROM", msg.getSender());
 
-            this.scheduler.addEmployeeID(parseEmployeeId(msg.getContent()), (AID) msg.getSender());
+            this.scheduler.addEmployeeID(parseEmployeeId(msg.getContent()), msg.getSender());
         }
 
     }

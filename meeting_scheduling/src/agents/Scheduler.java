@@ -3,7 +3,7 @@ package agents;
 import behaviours.scheduler.SchedulerBehaviour;
 import data.Group;
 import data.Meeting;
-import sajas.core.AID;
+import jade.core.AID;
 import sajas.core.Agent;
 import sajas.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;

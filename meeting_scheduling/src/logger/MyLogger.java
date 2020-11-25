@@ -1,7 +1,7 @@
 package logger;
 
 import data.MessageContent;
-import sajas.core.AID;
+import jade.core.AID;
 
 import java.io.File;
 import java.io.IOException;

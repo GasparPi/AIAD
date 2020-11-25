@@ -1,7 +1,7 @@
 package behaviours.employee;
 
 import agents.Employee;
-import sajas.core.AID;
+import jade.core.AID;
 import sajas.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -24,7 +24,7 @@ public class EmployeeSendIDBehaviour extends Behaviour {
             int employeeId = employee.getId();
 
             // Logger
-            this.employee.getLogger().logMessageContent("RECEIVED REQUEST", msg.getContent(),  "FROM", (AID) msg.getSender());
+            this.employee.getLogger().logMessageContent("RECEIVED REQUEST", msg.getContent(),  "FROM", msg.getSender());
 
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.INFORM);
@@ -32,7 +32,7 @@ public class EmployeeSendIDBehaviour extends Behaviour {
             this.employee.send(reply);
 
             // Logger
-            this.employee.getLogger().logMessageContent("SENT INFORM", reply.getContent(),"TO", (AID) msg.getSender());
+            this.employee.getLogger().logMessageContent("SENT INFORM", reply.getContent(),"TO", msg.getSender());
         }
     }
 

@@ -5,7 +5,7 @@ import behaviours.SchedulingState;
 import data.Meeting;
 import data.MessageContent;
 import data.TSPair;
-import sajas.core.AID;
+import jade.core.AID;
 import sajas.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
@@ -47,7 +47,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
             MessageContent respContent = new MessageContent();
 
             //Logger
-            this.employeeAgent.getLogger().logMessageContent("RECEIVED CFP", cfpContent,"FROM", (AID) cfp.getSender());
+            this.employeeAgent.getLogger().logMessageContent("RECEIVED CFP", cfpContent,"FROM", cfp.getSender());
 
             respContent.setEmployeeId(employeeAgent.getId());
 
@@ -92,7 +92,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
             response.setContentObject(respContent);
 
             //Logger
-            this.employeeAgent.getLogger().logMessageContent("SENDING PROPOSAL", respContent, "TO", (AID) cfp.getSender());
+            this.employeeAgent.getLogger().logMessageContent("SENDING PROPOSAL", respContent, "TO", cfp.getSender());
 
         } catch (UnreadableException | IOException e) {
             e.printStackTrace();
@@ -110,7 +110,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
             MessageContent acceptContent = (MessageContent) accept.getContentObject();
 
             //Logger
-            this.employeeAgent.getLogger().logMessageContent("RECEIVED ACCEPT PROPOSAL", acceptContent, "FROM", (AID) accept.getSender());
+            this.employeeAgent.getLogger().logMessageContent("RECEIVED ACCEPT PROPOSAL", acceptContent, "FROM", accept.getSender());
 
             MessageContent proposeContent = (MessageContent) propose.getContentObject();
             if (proposeContent.getAcceptance()){
@@ -124,7 +124,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
                 response.setContentObject(respContent);
 
                 //Logger
-                this.employeeAgent.getLogger().logMessageContent("RESPONSE TO ACCEPT PROPOSAL", respContent,"TO", (AID) accept.getSender());
+                this.employeeAgent.getLogger().logMessageContent("RESPONSE TO ACCEPT PROPOSAL", respContent,"TO", accept.getSender());
 
                 return response;
             }
@@ -143,7 +143,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
         }
 
         //Logger
-        this.employeeAgent.getLogger().logMessageContent("RESPONSE TO ACCEPT PROPOSAL",  respContent,  "TO", (AID) accept.getSender());
+        this.employeeAgent.getLogger().logMessageContent("RESPONSE TO ACCEPT PROPOSAL",  respContent,  "TO", accept.getSender());
 
         return response;
     }
@@ -153,7 +153,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
 
         try {
             MessageContent rejectContent = (MessageContent) reject.getContentObject();
-            this.employeeAgent.getLogger().logMessageContent("RECEIVED REJECT PROPOSAL", rejectContent, "FROM", (AID) reject.getSender());
+            this.employeeAgent.getLogger().logMessageContent("RECEIVED REJECT PROPOSAL", rejectContent, "FROM", reject.getSender());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }
@@ -165,7 +165,7 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
         try {
             MessageContent content = (MessageContent) message.getContentObject();
             //Logger
-            this.employeeAgent.getLogger().logMessageContent("OUT OF SEQUENCE",  content,  "FROM", (AID) message.getSender());
+            this.employeeAgent.getLogger().logMessageContent("OUT OF SEQUENCE",  content,  "FROM", message.getSender());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }

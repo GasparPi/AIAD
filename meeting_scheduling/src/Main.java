@@ -16,6 +16,7 @@ import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
+import uchicago.src.sim.engine.SimInit;
 
 
 public class Main extends Repast3Launcher {
@@ -166,5 +167,15 @@ public class Main extends Repast3Launcher {
 
         this.deletePreviousLogs();
         this.printInfo();
+    }
+
+    @Override
+    public String[] getInitParam() {
+        return new String[0];
+    }
+
+    @Override
+    public String getName() {
+        return "Meeting Scheduling";
     }
 }
