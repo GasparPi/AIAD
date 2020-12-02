@@ -106,15 +106,17 @@ public class Main extends Repast3Launcher {
             }
         }
 
+
         //Add employee agents to container
         for (Employee e : employees.values()) {
             AgentController agentController = this.container.acceptNewAgent(e.getStringId(), e);
             agentController.start();
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
-            }
+        }
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         // Setup Scheduler
