@@ -5,6 +5,7 @@ import data.Group;
 import data.Meeting;
 import jade.core.AID;
 import sajas.core.Agent;
+import sajas.core.behaviours.SimpleBehaviour;
 import sajas.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -16,14 +17,15 @@ import java.util.HashMap;
 
 public class Scheduler extends Agent {
 
-    private final static String ID = "SCHEDULER";
-    private final static String SERVICE_TYPE = "meeting-scheduling";
+    protected final static String ID = "SCHEDULER";
+    protected final static String SERVICE_TYPE = "meeting-scheduling";
 
     private final HashMap<Integer, Group> groups;
     private final HashMap<Integer, Meeting> meetings;
-    private final ArrayList<AID> agentsAIDs;
+    protected final ArrayList<AID> agentsAIDs;
     private final HashMap<Integer, AID> employeeAIDs;
-    private final MyLogger logger;
+    protected final MyLogger logger;
+    protected int employeeNumber;
 
     public Scheduler(HashMap<Integer, Group> groups, HashMap<Integer, Meeting> meetings, String logsDir) {
         this.groups = groups;
@@ -31,10 +33,12 @@ public class Scheduler extends Agent {
         this.agentsAIDs = new ArrayList<>();
         this.employeeAIDs = new HashMap<>();
         this.logger = new MyLogger(logsDir, ID);
+        this.employeeNumber = 0;
     }
 
     @Override
     protected void setup() {
+        /*
         try {
             this.searchEmployeeAIDs();
         } catch (FIPAException e) {
@@ -42,8 +46,10 @@ public class Scheduler extends Agent {
             e.printStackTrace();
             return;
         }
+        */
 
-        addBehaviour(new SchedulerBehaviour(this));
+        addBehaviour(new SearchBehaviour(this));
+        //addBehaviour(new SchedulerBehaviour(this));
     }
 
     public void searchEmployeeAIDs() throws FIPAException {
@@ -52,7 +58,10 @@ public class Scheduler extends Agent {
         sd.setType(SERVICE_TYPE);
         template.addServices(sd);
 
-        DFAgentDescription[] searchResults = DFService.search(this, template);
+        DFAgentDescription[] searchResults;
+        do {
+            searchResults = DFService.search(this, template);
+        }while(searchResults.length < employeeNumber);
 
         for (DFAgentDescription agentDescription : searchResults) {
             AID aid = (AID) agentDescription.getName();
@@ -94,4 +103,54 @@ public class Scheduler extends Agent {
     public MyLogger getLogger() {
         return logger;
     }
+
+    public void setEmployeeNumber(int employeeNumber) {
+        this.employeeNumber = employeeNumber;
+    }
+
+}
+
+class SearchBehaviour extends SimpleBehaviour{
+    private boolean done = false;
+    Scheduler myAgent;
+
+    SearchBehaviour(Scheduler a){
+        super();
+        myAgent = a;
+    }
+
+    @Override
+    public void action() {
+        System.out.println("Scheduler will now seek agents.");
+
+        DFAgentDescription template = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType(Scheduler.SERVICE_TYPE);
+        template.addServices(sd);
+
+        DFAgentDescription[] searchResults = new DFAgentDescription[0];
+        try {
+            searchResults = DFService.search(myAgent, template);
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
+        if (searchResults.length < myAgent.employeeNumber)
+            return;
+
+        for (DFAgentDescription agentDescription : searchResults) {
+            AID aid = (AID) agentDescription.getName();
+            myAgent.agentsAIDs.add(aid);
+
+            //Logger
+            myAgent.logger.logInfo("FOUND AGENT IN DF SERVICE: AID: " + aid.getLocalName());
+        }
+        myAgent.addBehaviour(new SchedulerBehaviour(myAgent));
+        done = true;
+    }
+
+    @Override
+    public boolean done() {
+        return done;
+    }
+
 }

@@ -72,6 +72,7 @@ public class Employee extends Agent {
         }
 
         addBehaviour(new EmployeeBehaviour(this));
+        System.out.println("Employee " + id + " is set up.");
     }
 
     private void register() throws FIPAException {

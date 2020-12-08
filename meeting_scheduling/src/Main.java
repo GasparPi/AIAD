@@ -100,11 +100,13 @@ public class Main extends Repast3Launcher {
         }
 
         //Get total meetings for each employee
+        /*
         for (Group g : groups.values()){
             for (int emp : g.getEmployees()){
                 employees.get(emp).addMeetings(g.getMeetings());
             }
         }
+        */
 
 
         //Add employee agents to container
@@ -113,14 +115,12 @@ public class Main extends Repast3Launcher {
             agentController.start();
         }
 
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        this.setupData(groupsFile, meetingsFile);
+
 
         // Setup Scheduler
         this.scheduler = new Scheduler(this.groups, this.meetings, LOGS_DIR);
+        scheduler.setEmployeeNumber(employees.size());
         AgentController schedulerController = this.container.acceptNewAgent(scheduler.getId(), scheduler);
         schedulerController.start();
     }
@@ -157,7 +157,7 @@ public class Main extends Repast3Launcher {
 
     @Override
     protected void launchJADE() {
-        this.setupData(groupsFile, meetingsFile);
+        //this.setupData(groupsFile, meetingsFile);
 
         try {
             this.setupAgents(employeesFile);
