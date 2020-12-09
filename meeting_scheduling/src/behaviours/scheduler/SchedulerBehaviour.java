@@ -15,5 +15,6 @@ public class SchedulerBehaviour extends SequentialBehaviour {
         }
 
         this.addSubBehaviour(new SaveResultsBehaviour(scheduler));
+        this.addSubBehaviour(new TerminateEmployees(scheduler));
     }
 }

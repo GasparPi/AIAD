@@ -2,10 +2,8 @@ package behaviours.employee;
 
 import agents.Employee;
 import behaviours.SchedulingState;
-import data.Meeting;
 import data.MessageContent;
 import data.TSPair;
-import jade.core.AID;
 import sajas.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
@@ -34,6 +32,11 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
 
     @Override
     protected ACLMessage handleCfp(ACLMessage cfp) {
+
+        if(cfp.getContent().equals("TERMINATE")){
+            employeeAgent.doDelete();
+            return null;
+        }
 
         ACLMessage response = new ACLMessage(ACLMessage.PROPOSE);
         response.addReceiver(cfp.getSender());
