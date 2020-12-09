@@ -5,6 +5,7 @@ import data.Meeting;
 
 import jade.core.Profile;
 import jade.wrapper.StaleProxyException;
+import model.SchedulingModel;
 import org.json.simple.parser.ParseException;
 import parsers.*;
 
@@ -47,6 +48,9 @@ public class Main extends Repast3Launcher {
     }
 
     public static void main(String[] args) {
+//        SimInit init = new SimInit();
+//        init.loadModel(new SchedulingModel(), null, false);
+
         if (args.length != 3) {
             System.err.println("Usage: Main <groups_filename> <meetings_filename> <employees_filename>\n" +
                     "Note: this files should be located in their respective directory under meeting_scheduling/vars/");
@@ -98,16 +102,6 @@ public class Main extends Repast3Launcher {
                     ". Make sure the file is located at meeting_scheduling/vars/employees");
             e.printStackTrace();
         }
-
-        //Get total meetings for each employee
-        /*
-        for (Group g : groups.values()){
-            for (int emp : g.getEmployees()){
-                employees.get(emp).addMeetings(g.getMeetings());
-            }
-        }
-        */
-
 
         //Add employee agents to container
         for (Employee e : employees.values()) {
