@@ -23,6 +23,8 @@ public class GroupsGenerator {
 
                 group.addEmployee(employeeId);
             }
+
+            groups.add(group);
         }
 
         // Ensure that every employee belongs to at least one group
