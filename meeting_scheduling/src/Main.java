@@ -5,18 +5,21 @@ import data.Meeting;
 
 import jade.core.Profile;
 import jade.wrapper.StaleProxyException;
-import model.SchedulingModel;
 import org.json.simple.parser.ParseException;
 import parsers.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import jade.core.ProfileImpl;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
+import uchicago.src.sim.analysis.OpenSequenceGraph;
+import uchicago.src.sim.engine.Schedule;
+import uchicago.src.sim.engine.ScheduleBase;
 import uchicago.src.sim.engine.SimInit;
 
 
@@ -26,18 +29,112 @@ public class Main extends Repast3Launcher {
     final static String MEETINGS_DIR = "meeting_scheduling/vars/meetings/";
 
     final static String LOGS_DIR = "logs/";
-    private final String groupsFile;
-    private final String meetingsFile;
-    private final String employeesFile;
 
-    HashMap<Integer, Employee> employees;
+    ArrayList<Employee> employees;
     HashMap<Integer, Meeting> meetings;
     HashMap<Integer, Group> groups;
     Scheduler scheduler;
 
     Runtime runtime;
-    ProfileImpl profile;
+    Profile profile;
     ContainerController container;
+
+    private OpenSequenceGraph plot;
+
+    private int numberOfEmployees, numberOfMeetings;
+    public Main(){
+        super();
+    }
+
+    @Override
+    protected void launchJADE() {
+        this.runtime = Runtime.instance();
+        this.profile = new ProfileImpl();
+        this.profile.setParameter(Profile.GUI, "true");
+        this.container = this.runtime.createMainContainer(this.profile);
+    }
+
+    public static void main(String[] args) {
+        SimInit init = new SimInit();
+        init.loadModel(new Main(), null, false);
+    }
+
+    @Override
+    public String[] getInitParam() {
+        return new String[]{
+            "numberOfEmployees",
+            "numberOfGroups",
+            "numberOfMeetings",
+        };
+    }
+
+    @Override
+    public String getName() {
+        return "Meeting Scheduling Model";
+    }
+
+    @Override
+    public void setup() {
+        super.setup();
+
+        setNumberOfEmployees(100);
+        setNumberOfMeetings(200);
+    }
+
+    @Override
+    public void begin() {
+        super.begin();
+
+        this.employees = new ArrayList<>();
+
+        if(plot != null)
+            plot.dispose();
+        plot = new OpenSequenceGraph("Employees", this);
+        plot.setAxisTitles("Employees", "Meetings");
+//      ADD SEQUENCE
+        plot.display();
+
+        getSchedule().scheduleActionAtInterval(100, plot, "step", Schedule.LAST);
+        getSchedule().execute();
+
+        try{
+            //Add employee agents to container
+
+            // generate EMPLOYEES
+            // DO THIS FOR EACH EMPLOYEE this.container.acceptNewAgent(e.getStringId(), e).start();
+            // AND THROW EXCEPTION
+
+            // generate GROUPS
+            // generate MEETINGS
+
+            // Setup Scheduler
+            this.scheduler = new Scheduler(this.groups, this.meetings, LOGS_DIR);
+            scheduler.setEmployeeNumber(employees.size());
+            this.container.acceptNewAgent(scheduler.getId(), scheduler).start();
+        } catch (StaleProxyException staleProxyException) {
+            staleProxyException.printStackTrace();
+        }
+    }
+
+    public int getNumberOfEmployees() {
+        return numberOfEmployees;
+    }
+
+    public void setNumberOfEmployees(int numberOfEmployees) {
+        this.numberOfEmployees = numberOfEmployees;
+    }
+
+    public int getNumberOfMeetings() {
+        return numberOfMeetings;
+    }
+
+    public void setNumberOfMeetings(int numberOfMeetings) {
+        this.numberOfMeetings = numberOfMeetings;
+    }
+
+    /* private final String groupsFile;
+    private final String meetingsFile;
+    private final String employeesFile;
 
     public Main(String groupsFile, String meetingsFile, String employeesFile) {
         super();
@@ -48,9 +145,6 @@ public class Main extends Repast3Launcher {
     }
 
     public static void main(String[] args) {
-//        SimInit init = new SimInit();
-//        init.loadModel(new SchedulingModel(), null, false);
-
         if (args.length != 3) {
             System.err.println("Usage: Main <groups_filename> <meetings_filename> <employees_filename>\n" +
                     "Note: this files should be located in their respective directory under meeting_scheduling/vars/");
@@ -173,5 +267,5 @@ public class Main extends Repast3Launcher {
     @Override
     public String getName() {
         return "Meeting Scheduling";
-    }
+    }*/
 }
