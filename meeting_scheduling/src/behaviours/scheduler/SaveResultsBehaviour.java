@@ -26,6 +26,9 @@ public class SaveResultsBehaviour extends Behaviour {
 
     @Override
     public void action() {
+
+        System.out.println("Saving...");
+
         File resultsDir = new File(RESULTS_DIR);
 
         if (!resultsDir.exists())

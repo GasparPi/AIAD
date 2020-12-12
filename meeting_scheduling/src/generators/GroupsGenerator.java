@@ -14,11 +14,11 @@ public class GroupsGenerator {
             Group group = new Group(i);
 
             int numGroupEmployees = 2 + (int) (Math.random() * (maxNumGroupEmployees - 1));
-            for (int j = 0; j < numGroupEmployees; j++) {
+            for (int j = 1; j <= numGroupEmployees; j++) {
 
                 int employeeId;
                 do {
-                    employeeId = (int) (Math.random() * (numberOfEmployees - 1));
+                    employeeId = 1 + (int) (Math.random() * (numberOfEmployees - 1));
                 } while (group.hasEmployee(employeeId));
 
                 group.addEmployee(employeeId);
@@ -28,7 +28,7 @@ public class GroupsGenerator {
         }
 
         // Ensure that every employee belongs to at least one group
-        for (int i = 0; i < numberOfEmployees; i++) {
+        for (int i = 1; i <= numberOfEmployees; i++) {
             int groupId ;
             do {
                 groupId = (int) (Math.random() * (numberOfGroups - 1));

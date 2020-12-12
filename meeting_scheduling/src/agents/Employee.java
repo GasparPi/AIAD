@@ -113,7 +113,7 @@ public class Employee extends Agent {
 
         Collections.sort(timeslots);
 
-        System.out.println("EMPLOYEE " + id + ": AGENDA BY PREFERENCE: \n" + timeslots.toString());
+        //System.out.println("EMPLOYEE " + id + ": AGENDA BY PREFERENCE: \n" + timeslots.toString());
 
         return timeslots;
     }

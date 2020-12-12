@@ -62,7 +62,7 @@ public class SchedulingModel extends Repast3Launcher {
 
             this.groups = GroupsGenerator.generate(numberOfEmployees, numberOfGroups);
 
-            this.meetings = MeetingsGenerator.generate(numberOfEmployees, this.groups, this.groups.size());
+            this.meetings = MeetingsGenerator.generate(numberOfMeetings, this.groups, this.groups.size());
 
             this.scheduler = new Scheduler(this.groups, this.meetings);
             scheduler.setEmployeeNumber(employees.size());

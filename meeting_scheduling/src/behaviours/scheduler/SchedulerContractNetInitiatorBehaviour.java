@@ -122,6 +122,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
                 rejectionMessage.setConversationId("MEETING" + currentMeeting);
                 responses.add(rejectionMessage);
                 this.schedulerAgent.getLogger().logMessageContent("PREPARED REJECT_PROPOSAL", content, "TO", receivers);
+                System.out.println("Gave up on meeting " + (currentMeeting + 1));
                 schedulerAgent.getMeetings().get(currentMeeting).schedule("NULL", -1, -1, new ArrayList<>());
                 ((SequentialBehaviour)getParent()).removeSubBehaviour(this);
             }
@@ -224,12 +225,14 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
         for ( int i : currentMeetingObject.getObligatoryEmployees()){
             if (!acceptors.contains(i)){
                 System.out.println("Something went dreadfully wrong.");
+                System.out.println("Employee " + i + " is MIA.");
                 scheduledSuccessfully = false;
             }
         }
         if (scheduledSuccessfully){
             TSPair firstSuggestion = suggestions.get(0);
             currentMeetingObject.schedule(firstSuggestion.getDay(), firstSuggestion.getTimeslot(), firstSuggestion.getTimeslot() + currentMeetingObject.getDuration() - 1, acceptors);
+            System.out.println("Meeting " + currentMeetingObject.getId() + " scheduled successfully.");
         }
     }
 
