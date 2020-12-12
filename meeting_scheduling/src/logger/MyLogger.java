@@ -11,19 +11,20 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class MyLogger {
+    private static final String LOGS_DIR = "logs/";
     private final Logger logger;
 
-    public MyLogger(String logDirName, String agentId) {
+    public MyLogger(String agentId) {
         this.logger = Logger.getLogger(agentId);
         this.logger.setUseParentHandlers(false);
 
         try {
-            File logDir = new File(logDirName);
+            File logDir = new File(LOGS_DIR);
 
             if (!logDir.exists())
                 logDir.mkdir();
 
-            FileHandler fh = new FileHandler(logDirName + System.currentTimeMillis() + "_" + agentId + ".log");
+            FileHandler fh = new FileHandler(LOGS_DIR + System.currentTimeMillis() + "_" + agentId + ".log");
             SimpleFormatter formatter = new SimpleFormatter();
             fh.setFormatter(formatter);
             this.logger.addHandler(fh);

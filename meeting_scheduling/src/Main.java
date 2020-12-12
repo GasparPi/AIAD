@@ -1,136 +1,43 @@
-import agents.Employee;
-import agents.Scheduler;
-import data.Group;
-import data.Meeting;
-
-import jade.core.Profile;
-import jade.wrapper.StaleProxyException;
-import org.json.simple.parser.ParseException;
-import parsers.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import jade.core.ProfileImpl;
-import sajas.core.Runtime;
-import sajas.sim.repast3.Repast3Launcher;
-import sajas.wrapper.AgentController;
-import sajas.wrapper.ContainerController;
-import uchicago.src.sim.analysis.OpenSequenceGraph;
-import uchicago.src.sim.engine.Schedule;
-import uchicago.src.sim.engine.ScheduleBase;
+import model.SchedulingModel;
 import uchicago.src.sim.engine.SimInit;
 
+import java.io.File;
 
-public class Main extends Repast3Launcher {
-    final static String EMPLOYEES_DIR = "meeting_scheduling/vars/employees/";
-    final static String GROUPS_DIR = "meeting_scheduling/vars/groups/";
-    final static String MEETINGS_DIR = "meeting_scheduling/vars/meetings/";
-
+public class Main {
     final static String LOGS_DIR = "logs/";
 
-    ArrayList<Employee> employees;
-    HashMap<Integer, Meeting> meetings;
-    HashMap<Integer, Group> groups;
-    Scheduler scheduler;
-
-    Runtime runtime;
-    Profile profile;
-    ContainerController container;
-
-    private OpenSequenceGraph plot;
-
-    private int numberOfEmployees, numberOfMeetings;
-    public Main(){
-        super();
-    }
-
-    @Override
-    protected void launchJADE() {
-        this.runtime = Runtime.instance();
-        this.profile = new ProfileImpl();
-        this.profile.setParameter(Profile.GUI, "true");
-        this.container = this.runtime.createMainContainer(this.profile);
-    }
-
     public static void main(String[] args) {
-        SimInit init = new SimInit();
-        init.loadModel(new Main(), null, false);
-    }
-
-    @Override
-    public String[] getInitParam() {
-        return new String[]{
-            "numberOfEmployees",
-            "numberOfGroups",
-            "numberOfMeetings",
-        };
-    }
-
-    @Override
-    public String getName() {
-        return "Meeting Scheduling Model";
-    }
-
-    @Override
-    public void setup() {
-        super.setup();
-
-        setNumberOfEmployees(100);
-        setNumberOfMeetings(200);
-    }
-
-    @Override
-    public void begin() {
-        super.begin();
-
-        this.employees = new ArrayList<>();
-
-        if(plot != null)
-            plot.dispose();
-        plot = new OpenSequenceGraph("Employees", this);
-        plot.setAxisTitles("Employees", "Meetings");
-//      ADD SEQUENCE
-        plot.display();
-
-        getSchedule().scheduleActionAtInterval(100, plot, "step", Schedule.LAST);
-        getSchedule().execute();
-
-        try{
-            //Add employee agents to container
-
-            // generate EMPLOYEES
-            // DO THIS FOR EACH EMPLOYEE this.container.acceptNewAgent(e.getStringId(), e).start();
-            // AND THROW EXCEPTION
-
-            // generate GROUPS
-            // generate MEETINGS
-
-            // Setup Scheduler
-            this.scheduler = new Scheduler(this.groups, this.meetings, LOGS_DIR);
-            scheduler.setEmployeeNumber(employees.size());
-            this.container.acceptNewAgent(scheduler.getId(), scheduler).start();
-        } catch (StaleProxyException staleProxyException) {
-            staleProxyException.printStackTrace();
+        if (args.length == 0) {
+            System.err.println("Usage: <num_employees> <num_groups> <num_meetings>");
+            return;
         }
+
+        int numberOfEmployees = Integer.parseInt(args[0]);
+        int numberOfGroups = Integer.parseInt(args[1]);
+        int numberOfMeetings = Integer.parseInt(args[2]);
+
+        deletePreviousLogs();
+
+        SimInit init = new SimInit();
+        init.loadModel(new SchedulingModel(numberOfEmployees, numberOfGroups, numberOfMeetings), null, false);
     }
 
-    public int getNumberOfEmployees() {
-        return numberOfEmployees;
+    private static void deletePreviousLogs() {
+        File logDir = new File(LOGS_DIR);
+        if (logDir.exists())
+            deleteDirRecursively(logDir);
     }
 
-    public void setNumberOfEmployees(int numberOfEmployees) {
-        this.numberOfEmployees = numberOfEmployees;
+    private static void deleteDirRecursively(File dir) {
+        File[] allContents = dir.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirRecursively(file);
+            }
+        }
+        dir.delete();
     }
 
-    public int getNumberOfMeetings() {
-        return numberOfMeetings;
-    }
-
-    public void setNumberOfMeetings(int numberOfMeetings) {
-        this.numberOfMeetings = numberOfMeetings;
-    }
 
     /* private final String groupsFile;
     private final String meetingsFile;
@@ -227,21 +134,7 @@ public class Main extends Repast3Launcher {
         }
     }
 
-    private void deletePreviousLogs() {
-        File logDir = new File(LOGS_DIR);
-        if (logDir.exists())
-            deleteDirRecursively(logDir);
-    }
 
-    private void deleteDirRecursively(File dir) {
-        File[] allContents = dir.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirRecursively(file);
-            }
-        }
-        dir.delete();
-    }
 
     @Override
     protected void launchJADE() {

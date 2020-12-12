@@ -23,10 +23,10 @@ public class Employee extends Agent {
     private final MyLogger logger;
     private int meetings;
 
-    public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda, String logDir) {
+    public Employee(int id, HashMap<String, ArrayList<Timeslot>> agenda) {
         this.id = id;
         this.agenda = agenda;
-        this.logger = new MyLogger(logDir, "Employee" + id);
+        this.logger = new MyLogger( "Employee" + id);
         this.meetings = 0;
     }
 

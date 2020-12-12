@@ -20,19 +20,19 @@ public class Scheduler extends Agent {
     protected final static String ID = "SCHEDULER";
     protected final static String SERVICE_TYPE = "meeting-scheduling";
 
-    private final HashMap<Integer, Group> groups;
-    private final HashMap<Integer, Meeting> meetings;
+    private final ArrayList<Group> groups;
+    private final ArrayList<Meeting> meetings;
     protected final ArrayList<AID> agentsAIDs;
     private final HashMap<Integer, AID> employeeAIDs;
     protected final MyLogger logger;
     protected int employeeNumber;
 
-    public Scheduler(HashMap<Integer, Group> groups, HashMap<Integer, Meeting> meetings, String logsDir) {
+    public Scheduler(ArrayList<Group> groups, ArrayList<Meeting> meetings) {
         this.groups = groups;
         this.meetings = meetings;
         this.agentsAIDs = new ArrayList<>();
         this.employeeAIDs = new HashMap<>();
-        this.logger = new MyLogger(logsDir, ID);
+        this.logger = new MyLogger(ID);
         this.employeeNumber = 0;
     }
 
@@ -76,11 +76,11 @@ public class Scheduler extends Agent {
         return ID;
     }
 
-    public HashMap<Integer, Group> getGroups() {
+    public ArrayList<Group> getGroups() {
         return groups;
     }
 
-    public HashMap<Integer, Meeting> getMeetings() {
+    public ArrayList<Meeting> getMeetings() {
         return meetings;
     }
 

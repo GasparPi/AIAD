@@ -10,7 +10,7 @@ public class SchedulerBehaviour extends SequentialBehaviour {
 
         this.addSubBehaviour(new RequestEmployeeIDsBehaviour(scheduler));
         this.addSubBehaviour(new ReceiveEmployeeIDsBehaviour(scheduler));
-        for (int i : scheduler.getMeetings().keySet()) {
+        for (int i = 0; i < scheduler.getMeetings().size(); i++) {
             this.addSubBehaviour(new SchedulerContractNetInitiatorBehaviour(scheduler, i));
         }
 

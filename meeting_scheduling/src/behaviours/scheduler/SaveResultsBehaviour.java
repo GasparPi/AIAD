@@ -85,7 +85,7 @@ public class SaveResultsBehaviour extends Behaviour {
     private JSONArray parseMeetingsResults() {
         JSONArray resultsArray = new JSONArray();
 
-        for (Meeting meeting : this.scheduler.getMeetings().values()) {
+        for (Meeting meeting : this.scheduler.getMeetings()) {
             JSONObject jsonMeeting = new JSONObject();
 
             jsonMeeting.put("id", meeting.getId());
