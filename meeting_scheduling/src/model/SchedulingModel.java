@@ -15,6 +15,9 @@ import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.ContainerController;
 import uchicago.src.sim.analysis.OpenSequenceGraph;
 import uchicago.src.sim.engine.Schedule;
+import uchicago.src.sim.gui.DisplaySurface;
+import uchicago.src.sim.gui.Object2DDisplay;
+import uchicago.src.sim.space.Object2DGrid;
 
 import java.util.ArrayList;
 
@@ -33,30 +36,40 @@ public class SchedulingModel extends Repast3Launcher {
     Profile profile;
     ContainerController container;
 
+    private Object2DGrid space;
+    private DisplaySurface displaySurface;
     private OpenSequenceGraph plot;
 
     @Override
     public void begin() {
         super.begin();
 
-        this.beginGraphs();
-        this.beginAgents();
+        this.buildModel();
+        this.buildDisplay();
+        this.buildSchedule();
+
+        this.displaySurface.display();
+        this.plot.display();
     }
 
-    public void beginGraphs() {
+    @Override
+    public void setup() {
+        super.setup();
+
+        setNumberOfEmployees(this.numberOfEmployees);
+        setNumberOfGroups(this.numberOfGroups);
+        setNumberOfMeetings(this.numberOfMeetings);
+
         if (plot != null)
             plot.dispose();
 
-        plot = new OpenSequenceGraph("Employees", this);
-        plot.setAxisTitles("Employees", "Meetings");
-        // ADD SEQUENCE
-        plot.display();
+        if (displaySurface != null)
+            displaySurface.dispose();
 
-        getSchedule().scheduleActionAtInterval(100, plot, "step", Schedule.LAST);
-        getSchedule().execute();
+        this.displaySurface = new DisplaySurface(this, "Meeting Scheduling Display");
     }
 
-    public void beginAgents() {
+    private void buildModel() {
         try {
             this.employees = EmployeesGenerator.generate(numberOfEmployees, this.container);
 
@@ -71,6 +84,27 @@ public class SchedulingModel extends Repast3Launcher {
             System.err.println("Error starting new scheduler agent");
             e.printStackTrace();
         }
+
+    }
+
+
+    private void buildDisplay() {
+        plot = new OpenSequenceGraph("Employees", this);
+        plot.setAxisTitles("Employees", "Meetings");
+        // ADD SEQUENCE
+
+        Object2DDisplay agentDisplay = new Object2DDisplay(this.space);
+        agentDisplay.setObjectList(this.employees);
+
+        this.displaySurface.addDisplayableProbeable(agentDisplay, "Agents");
+        addSimEventListener(this.displaySurface);
+
+
+    }
+
+    private void buildSchedule() {
+        getSchedule().scheduleActionAtInterval(100, plot, "step", Schedule.LAST);
+        getSchedule().execute();
     }
 
     public int getNumberOfEmployees() {
@@ -103,15 +137,6 @@ public class SchedulingModel extends Repast3Launcher {
         this.profile = new ProfileImpl();
         this.profile.setParameter(Profile.GUI, "false");
         this.container = this.runtime.createMainContainer(this.profile);
-    }
-
-    @Override
-    public void setup() {
-        super.setup();
-
-        setNumberOfEmployees(this.numberOfEmployees);
-        setNumberOfGroups(this.numberOfGroups);
-        setNumberOfMeetings(this.numberOfMeetings);
     }
 
     @Override
