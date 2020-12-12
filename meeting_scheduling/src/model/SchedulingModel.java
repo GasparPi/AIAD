@@ -34,59 +34,53 @@ public class SchedulingModel extends Repast3Launcher {
 
     private OpenSequenceGraph plot;
 
-    public SchedulingModel(int numberOfEmployees, int numberOfGroups, int numberOfMeetings) {
-        this.numberOfEmployees = numberOfEmployees;
-        this.numberOfGroups = numberOfGroups;
-        this.numberOfMeetings = numberOfMeetings;
-    }
-
-    public SchedulingModel() {
-
-    }
-
     @Override
     public void begin() {
         super.begin();
 
-        this.employees = new ArrayList<>();
+        this.beginGraphs();
+        this.beginAgents();
+    }
 
+    public void beginGraphs() {
         if (plot != null)
             plot.dispose();
 
         plot = new OpenSequenceGraph("Employees", this);
         plot.setAxisTitles("Employees", "Meetings");
-//      ADD SEQUENCE
+        // ADD SEQUENCE
         plot.display();
 
         getSchedule().scheduleActionAtInterval(100, plot, "step", Schedule.LAST);
         getSchedule().execute();
+    }
 
+    public void beginAgents() {
+        // generate EMPLOYEES
+        this.employees = EmployeesGenerator.generate(numberOfEmployees);
         try {
-            //Add employee agents to container
-
-            // generate EMPLOYEES
-            this.employees = EmployeesGenerator.generate(numberOfEmployees);
-            try {
-                for (Employee e : employees) {
-                    this.container.acceptNewAgent(e.getStringId(), e).start();
-                }
-            } catch (StaleProxyException e){
-                e.printStackTrace();
+            for (Employee e : employees) {
+                this.container.acceptNewAgent(e.getStringId(), e).start();
             }
+        } catch (StaleProxyException e){
+            System.err.println("Error starting new employee agent");
+            e.printStackTrace();
+        }
 
-            // generate GROUPS
-            this.groups = GroupsGenerator.generate(numberOfEmployees, numberOfGroups);
+        // generate GROUPS
+        this.groups = GroupsGenerator.generate(numberOfEmployees, numberOfGroups);
 
-            // generate MEETINGS
-            this.meetings = new ArrayList<>();
+        // generate MEETINGS
+        this.meetings = new ArrayList<>();
 
-            // Setup Scheduler
-            this.scheduler = new Scheduler(this.groups, this.meetings);
-            scheduler.setEmployeeNumber(employees.size());
+        // Setup Scheduler
+        this.scheduler = new Scheduler(this.groups, this.meetings);
+        scheduler.setEmployeeNumber(employees.size());
+        try {
             this.container.acceptNewAgent(scheduler.getId(), scheduler).start();
-
-        } catch (StaleProxyException staleProxyException) {
-            staleProxyException.printStackTrace();
+        } catch (StaleProxyException e) {
+            System.err.println("Error starting new scheduler agent");
+            e.printStackTrace();
         }
     }
 
@@ -127,6 +121,7 @@ public class SchedulingModel extends Repast3Launcher {
         super.setup();
 
         setNumberOfEmployees(this.numberOfEmployees);
+        setNumberOfGroups(this.numberOfGroups);
         setNumberOfMeetings(this.numberOfMeetings);
     }
 
