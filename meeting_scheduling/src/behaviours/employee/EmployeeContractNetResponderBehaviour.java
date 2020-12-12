@@ -54,42 +54,40 @@ public class EmployeeContractNetResponderBehaviour extends SSIteratedContractNet
 
             respContent.setEmployeeId(employeeAgent.getId());
 
-            switch (cfpContent.getState()) {
-                case REQUEST_TIMESLOTS -> {
-                    respContent.setState(SchedulingState.REQUEST_TIMESLOTS);
+            if (cfpContent.getState() == SchedulingState.REQUEST_TIMESLOTS) {
+                respContent.setState(SchedulingState.REQUEST_TIMESLOTS);
 
-                    meetingDuration = cfpContent.getMeetingDuration();
+                meetingDuration = cfpContent.getMeetingDuration();
 
 
-                    while (currentSuggestion < timeslotPreference.size()){
-                        if(timeslotPreference.get(currentSuggestion).getAvailableDuration() < cfpContent.getMeetingDuration()) {
-                            currentSuggestion++;
-                        }
-                        else {
+                while (currentSuggestion < timeslotPreference.size()){
+                    if(timeslotPreference.get(currentSuggestion).getAvailableDuration() < cfpContent.getMeetingDuration()) {
+                        currentSuggestion++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+                if (currentSuggestion < timeslotPreference.size()){
+                    respContent.setDay(timeslotPreference.get(currentSuggestion).getDay());
+                    respContent.setTimeslot(timeslotPreference.get(currentSuggestion).getTimeslot());
+                    currentSuggestion++;
+                }
+            }
+            if (cfpContent.getState() == SchedulingState.DECIDE_TIMESLOTS) {
+                respContent.setState(SchedulingState.DECIDE_TIMESLOTS);
+
+                boolean acceptance = false;
+                for (TSPair ts : timeslotPreference) {
+                    if(ts.getDay().equals(cfpContent.getDay()) && ts.getTimeslot() == cfpContent.getTimeslot()){
+                        if(ts.getAvailableDuration() >= meetingDuration){
+                            acceptance = true;
                             break;
                         }
                     }
-
-                    if (currentSuggestion < timeslotPreference.size()){
-                        respContent.setDay(timeslotPreference.get(currentSuggestion).getDay());
-                        respContent.setTimeslot(timeslotPreference.get(currentSuggestion).getTimeslot());
-                        currentSuggestion++;
-                    }
                 }
-                case DECIDE_TIMESLOTS -> {
-                    respContent.setState(SchedulingState.DECIDE_TIMESLOTS);
-
-                    boolean acceptance = false;
-                    for (TSPair ts : timeslotPreference) {
-                        if(ts.getDay().equals(cfpContent.getDay()) && ts.getTimeslot() == cfpContent.getTimeslot()){
-                            if(ts.getAvailableDuration() >= meetingDuration){
-                                acceptance = true;
-                                break;
-                            }
-                        }
-                    }
-                    respContent.setAcceptance(acceptance);
-                }
+                respContent.setAcceptance(acceptance);
             }
 
             response.setContentObject(respContent);

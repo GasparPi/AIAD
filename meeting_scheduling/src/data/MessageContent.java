@@ -82,10 +82,10 @@ public class MessageContent implements Serializable {
     }
 
     private String stateToString() {
-        return switch (this.state) {
-            case DECIDE_TIMESLOTS -> "Decide TimeSlots";
-            case REQUEST_TIMESLOTS -> "Request TimeSlots";
-            case NULL -> "NULL";
-        };
+        if(this.state == SchedulingState.DECIDE_TIMESLOTS)
+            return "Decide TimeSlots";
+        if(this.state == SchedulingState.REQUEST_TIMESLOTS)
+            return "Request TimeSlots";
+        return "NULL";
     }
 }

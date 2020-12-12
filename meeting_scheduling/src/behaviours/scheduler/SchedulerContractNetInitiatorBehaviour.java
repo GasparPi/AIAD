@@ -46,13 +46,13 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
         }
          */
 
-        switch (state) {
-            case REQUEST_TIMESLOTS -> prepState1CFP(cfp);
-            case DECIDE_TIMESLOTS -> prepState2CFP(cfp);
-            default -> {
-                System.out.println("Something went terribly wrong.");
-                schedulerAgent.doDelete();
-            }
+        if (state == SchedulingState.REQUEST_TIMESLOTS)
+            prepState1CFP(cfp);
+        else if (state == SchedulingState.DECIDE_TIMESLOTS)
+            prepState2CFP(cfp);
+        else {
+            System.out.println("Something went terribly wrong.");
+            schedulerAgent.doDelete();
         }
 
         //Logger
@@ -83,121 +83,118 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
         if(cfp == null)
             System.out.println("CFP IS NULL : " + this.CFP_KEY);
 
-        switch (state) {
-            case REQUEST_TIMESLOTS -> {
-                for (Object obj : responses) {
-                    ACLMessage aclMessage = (ACLMessage) obj;
-                    MessageContent content;
-                    try {
-                        content = (MessageContent) aclMessage.getContentObject();
-                        if(!content.getDay().equals("") && content.getTimeslot() != -1) {
-                            suggestions.add(new TSPair(content.getDay(), content.getTimeslot()));
-                        }
-
-                        // Logger
-                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content,"FROM", aclMessage.getSender());
-                    } catch (UnreadableException e) {
-                        e.printStackTrace();
+        if (state == SchedulingState.REQUEST_TIMESLOTS) {
+            for (Object obj : responses) {
+                ACLMessage aclMessage = (ACLMessage) obj;
+                MessageContent content;
+                try {
+                    content = (MessageContent) aclMessage.getContentObject();
+                    if(!content.getDay().equals("") && content.getTimeslot() != -1) {
+                        suggestions.add(new TSPair(content.getDay(), content.getTimeslot()));
                     }
 
-
+                    // Logger
+                    this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content,"FROM", aclMessage.getSender());
+                } catch (UnreadableException e) {
+                    e.printStackTrace();
                 }
-                if(suggestions.isEmpty()){
-                    ACLMessage rejectionMessage = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
 
-                    MessageContent content = new MessageContent();
-                    content.setState(SchedulingState.DECIDE_TIMESLOTS);
-                    try {
-                        rejectionMessage.setContentObject(content);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
 
-                    ArrayList<AID> receivers = new ArrayList<>();
-                    for (Object obj : responses) {
-                        ACLMessage message = (ACLMessage) obj;
-                        rejectionMessage.addReceiver(message.getSender());
-                        receivers.add(message.getSender());
-                    }
-                    rejectionMessage.setSender(schedulerAgent.getAID());
-                    rejectionMessage.setConversationId("MEETING" + currentMeeting);
-                    responses.add(rejectionMessage);
-                    this.schedulerAgent.getLogger().logMessageContent("PREPARED REJECT_PROPOSAL", content, "TO", receivers);
-                    schedulerAgent.getMeetings().get(currentMeeting).schedule("NULL", -1, -1, new ArrayList<>());
-                    ((SequentialBehaviour)getParent()).removeSubBehaviour(this);
-                }
-                else {
-                    state = SchedulingState.DECIDE_TIMESLOTS;
-                    prepState2CFP(cfp);
-                    v.add(cfp);
-                    newIteration(v);
-                }
             }
-            case DECIDE_TIMESLOTS -> {
-                boolean acceptedByAll = true;
+            if(suggestions.isEmpty()){
+                ACLMessage rejectionMessage = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
+
+                MessageContent content = new MessageContent();
+                content.setState(SchedulingState.DECIDE_TIMESLOTS);
+                try {
+                    rejectionMessage.setContentObject(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                ArrayList<AID> receivers = new ArrayList<>();
                 for (Object obj : responses) {
                     ACLMessage message = (ACLMessage) obj;
-
-                    int id = 0;
-                    boolean accept = false;
-                    MessageContent content;
-                    try {
-                        content = (MessageContent) message.getContentObject();
-                        id = content.getEmployeeId();
-                        accept = content.getAcceptance();
-
-                        // Logger
-                        this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content, "FROM", message.getSender());
-
-                    } catch (UnreadableException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (!accept && schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees().contains(id)) {
-                        acceptedByAll = false;
-                    }
+                    rejectionMessage.addReceiver(message.getSender());
+                    receivers.add(message.getSender());
                 }
-                if (acceptedByAll) {
-                    ACLMessage acceptanceMessage = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
-
-                    MessageContent content = new MessageContent();
-                    content.setState(SchedulingState.DECIDE_TIMESLOTS);
-                    content.setDay(suggestions.get(0).getDay());
-                    content.setTimeslot(suggestions.get(0).getTimeslot());
-                    try {
-                        acceptanceMessage.setContentObject(content);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    ArrayList<AID> receivers = new ArrayList<>();
-                    for (Object obj : responses) {
-                        ACLMessage message = (ACLMessage) obj;
-                        acceptanceMessage.addReceiver(message.getSender());
-                        receivers.add(message.getSender());
-                    }
-                    acceptanceMessage.setSender(schedulerAgent.getAID());
-                    acceptanceMessage.setConversationId("MEETING" + currentMeeting);
-                    acceptances.add(acceptanceMessage);
-                    this.schedulerAgent.getLogger().logMessageContent("PREPARED ACCEPT_PROPOSAL", content, "TO", receivers);
-                } else {
-                    suggestions.remove(0);
-                    if (suggestions.isEmpty()) {
-                        state = SchedulingState.REQUEST_TIMESLOTS;
-                        prepState1CFP(cfp);
-                    } else {
-                        prepState2CFP(cfp);
-                    }
-                    v.add(cfp);
-                    newIteration(v);
-                }
+                rejectionMessage.setSender(schedulerAgent.getAID());
+                rejectionMessage.setConversationId("MEETING" + currentMeeting);
+                responses.add(rejectionMessage);
+                this.schedulerAgent.getLogger().logMessageContent("PREPARED REJECT_PROPOSAL", content, "TO", receivers);
+                schedulerAgent.getMeetings().get(currentMeeting).schedule("NULL", -1, -1, new ArrayList<>());
+                ((SequentialBehaviour)getParent()).removeSubBehaviour(this);
             }
-            default -> {
-                System.out.println("Something went horribly wrong.");
-                schedulerAgent.doDelete();
+            else {
+                state = SchedulingState.DECIDE_TIMESLOTS;
+                prepState2CFP(cfp);
+                v.add(cfp);
+                newIteration(v);
             }
         }
+        else if (state == SchedulingState.DECIDE_TIMESLOTS) {
+            boolean acceptedByAll = true;
+            for (Object obj : responses) {
+                ACLMessage message = (ACLMessage) obj;
 
+                int id = 0;
+                boolean accept = false;
+                MessageContent content;
+                try {
+                    content = (MessageContent) message.getContentObject();
+                    id = content.getEmployeeId();
+                    accept = content.getAcceptance();
+
+                    // Logger
+                    this.schedulerAgent.getLogger().logMessageContent("RECEIVED PROPOSAL", content, "FROM", message.getSender());
+
+                } catch (UnreadableException e) {
+                    e.printStackTrace();
+                }
+
+                if (!accept && schedulerAgent.getMeetings().get(currentMeeting).getObligatoryEmployees().contains(id)) {
+                    acceptedByAll = false;
+                }
+            }
+            if (acceptedByAll) {
+                ACLMessage acceptanceMessage = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
+
+                MessageContent content = new MessageContent();
+                content.setState(SchedulingState.DECIDE_TIMESLOTS);
+                content.setDay(suggestions.get(0).getDay());
+                content.setTimeslot(suggestions.get(0).getTimeslot());
+                try {
+                    acceptanceMessage.setContentObject(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                ArrayList<AID> receivers = new ArrayList<>();
+                for (Object obj : responses) {
+                    ACLMessage message = (ACLMessage) obj;
+                    acceptanceMessage.addReceiver(message.getSender());
+                    receivers.add(message.getSender());
+                }
+                acceptanceMessage.setSender(schedulerAgent.getAID());
+                acceptanceMessage.setConversationId("MEETING" + currentMeeting);
+                acceptances.add(acceptanceMessage);
+                this.schedulerAgent.getLogger().logMessageContent("PREPARED ACCEPT_PROPOSAL", content, "TO", receivers);
+            } else {
+                suggestions.remove(0);
+                if (suggestions.isEmpty()) {
+                    state = SchedulingState.REQUEST_TIMESLOTS;
+                    prepState1CFP(cfp);
+                } else {
+                    prepState2CFP(cfp);
+                }
+                v.add(cfp);
+                newIteration(v);
+            }
+        }
+        else {
+            System.out.println("Something went horribly wrong.");
+            schedulerAgent.doDelete();
+        }
     }
 
     @Override
