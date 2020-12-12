@@ -1,11 +1,9 @@
 
+import logger.MyLogger;
 import model.SchedulingModel;
-import java.io.File;
 import uchicago.src.sim.engine.SimInit;
 
 public class Main {
-    final static String LOGS_DIR = "logs/";
-
     public static void main(String[] args) {
         if (args.length == 0) {
             System.err.println("Usage: <num_employees> <num_groups> <num_meetings>");
@@ -16,26 +14,10 @@ public class Main {
         int numberOfGroups = Integer.parseInt(args[1]);
         int numberOfMeetings = Integer.parseInt(args[2]);
 
-        deletePreviousLogs();
+        MyLogger.deletePreviousLogs();
 
         SimInit init = new SimInit();
         init.loadModel(new SchedulingModel(numberOfEmployees, numberOfGroups, numberOfMeetings), null, false);
-    }
-
-    private static void deletePreviousLogs() {
-        File logDir = new File(LOGS_DIR);
-        if (logDir.exists())
-            deleteDirRecursively(logDir);
-    }
-
-    private static void deleteDirRecursively(File dir) {
-        File[] allContents = dir.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirRecursively(file);
-            }
-
-        }
     }
 
     /* private final String groupsFile;

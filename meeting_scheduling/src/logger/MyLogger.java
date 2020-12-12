@@ -54,4 +54,20 @@ public class MyLogger {
     public void logMessageContent(String header, String content, String direction, AID correspondent) {
         this.logger.info("\t" + header + ": " + content + "\n\t\t" + direction + ": " + correspondent.getLocalName());
     }
+
+    public static void deletePreviousLogs() {
+        File logDir = new File(LOGS_DIR);
+        if (logDir.exists())
+            deleteDirRecursively(logDir);
+    }
+
+    private static void deleteDirRecursively(File dir) {
+        File[] allContents = dir.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirRecursively(file);
+            }
+
+        }
+    }
 }
