@@ -1,17 +1,18 @@
 package generators;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import agents.Employee;
+import data.Timeslot;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class EmployeesGenerator {
-    final static String GENERATED_DIR = "problem_generator/generated/";
+    //final static String GENERATED_DIR = "problem_generator/generated/";
 
+    /*
     public static boolean generate(String fileCode, Integer numberOfEmployees){
         try {
+
             File file = new File(GENERATED_DIR + fileCode + "_employees.json");
 
             if(!file.createNewFile()){
@@ -42,30 +43,41 @@ public class EmployeesGenerator {
 
         return true;
     }
+     */
 
-    private static JSONObject generateAgenda() {
-        JSONObject agendaObject = new JSONObject();
+    public static ArrayList<Employee> generate(Integer numberOfEmployees) {
+        ArrayList<Employee> employees = new ArrayList<>();
 
-        agendaObject.put("monday", generateTimeslots());
-        agendaObject.put("tuesday", generateTimeslots());
-        agendaObject.put("wednesday", generateTimeslots());
-        agendaObject.put("thursday", generateTimeslots());
-        agendaObject.put("friday", generateTimeslots());
+        for(int i = 1; i <= numberOfEmployees; i++){
+            Employee e = new Employee(i, generateAgenda());
 
-        return agendaObject;
+            employees.add(e);
+        }
+
+        return employees;
     }
 
-    private static JSONArray generateTimeslots() {
-        JSONArray timeslots = new JSONArray();
+    private static HashMap<String, ArrayList<Timeslot>> generateAgenda() {
+        HashMap<String, ArrayList<Timeslot>> agenda = new HashMap<>();
+
+        agenda.put("monday", generateTimeslots());
+        agenda.put("tuesday", generateTimeslots());
+        agenda.put("wednesday", generateTimeslots());
+        agenda.put("thursday", generateTimeslots());
+        agenda.put("friday", generateTimeslots());
+
+        return agenda;
+    }
+
+    private static ArrayList<Timeslot> generateTimeslots() {
+        ArrayList<Timeslot> timeslots = new ArrayList<>();
 
         for(int i=1; i < 10; i++){
             int usedTimeslot = 1 + (int) (Math.random() * 10);
             if(usedTimeslot <= 5){
                 int priority = 1 + (int) (Math.random() * 3);
-                JSONArray pair = new JSONArray();
-                pair.add(i);
-                pair.add(priority);
-                timeslots.add(pair);
+                Timeslot ts = new Timeslot(i, priority);
+                timeslots.add(ts);
             }
         }
 

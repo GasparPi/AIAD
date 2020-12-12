@@ -1,7 +1,7 @@
-import model.SchedulingModel;
-import uchicago.src.sim.engine.SimInit;
 
+import model.SchedulingModel;
 import java.io.File;
+import uchicago.src.sim.engine.SimInit;
 
 public class Main {
     final static String LOGS_DIR = "logs/";
@@ -34,10 +34,9 @@ public class Main {
             for (File file : allContents) {
                 deleteDirRecursively(file);
             }
-        }
-        dir.delete();
-    }
 
+        }
+    }
 
     /* private final String groupsFile;
     private final String meetingsFile;

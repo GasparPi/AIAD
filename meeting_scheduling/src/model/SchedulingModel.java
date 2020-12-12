@@ -4,6 +4,7 @@ import agents.Employee;
 import agents.Scheduler;
 import data.Group;
 import data.Meeting;
+import generators.EmployeesGenerator;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.StaleProxyException;
@@ -61,6 +62,14 @@ public class SchedulingModel extends Repast3Launcher {
             // generate EMPLOYEES
             // DO THIS FOR EACH EMPLOYEE this.container.acceptNewAgent(e.getStringId(), e).start();
             // AND THROW EXCEPTION
+            ArrayList<Employee> employees = EmployeesGenerator.generate(numberOfEmployees);
+            try {
+                for (Employee e : employees) {
+                    this.container.acceptNewAgent(e.getStringId(), e).start();
+                }
+            } catch (StaleProxyException e){
+                e.printStackTrace();
+            }
 
             // generate GROUPS
             // generate MEETINGS
