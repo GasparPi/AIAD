@@ -3,6 +3,7 @@ import agents.Scheduler;
 import data.Group;
 import data.Meeting;
 
+import generators.EmployeesGenerator;
 import jade.core.Profile;
 import jade.wrapper.StaleProxyException;
 import org.json.simple.parser.ParseException;
@@ -103,6 +104,14 @@ public class Main extends Repast3Launcher {
             // generate EMPLOYEES
             // DO THIS FOR EACH EMPLOYEE this.container.acceptNewAgent(e.getStringId(), e).start();
             // AND THROW EXCEPTION
+            ArrayList<Employee> employees = EmployeesGenerator.generate(numberOfEmployees, LOGS_DIR);
+            try {
+                for (Employee e : employees) {
+                    this.container.acceptNewAgent(e.getStringId(), e).start();
+                }
+            } catch (StaleProxyException e){
+                e.printStackTrace();
+            }
 
             // generate GROUPS
             // generate MEETINGS
