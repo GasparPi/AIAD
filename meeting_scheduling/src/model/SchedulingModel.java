@@ -25,8 +25,9 @@ import java.util.ArrayList;
 public class SchedulingModel extends Repast3Launcher {
 
     private int numberOfEmployees = 50;
-    private int numberOfGroups = 50;
-    private int numberOfMeetings = 50;
+    private int numberOfGroups = 10;
+    private int numberOfMeetings = 20;
+    private int occupancyRate = 50;
 
     ArrayList<Employee> employees;
     ArrayList<Meeting> meetings;
@@ -60,34 +61,46 @@ public class SchedulingModel extends Repast3Launcher {
         setNumberOfEmployees(this.numberOfEmployees);
         setNumberOfGroups(this.numberOfGroups);
         setNumberOfMeetings(this.numberOfMeetings);
+        setOccupancyRate(this.occupancyRate);
 
-        if (plot != null)
-            plot.dispose();
+        if (this.plot != null)
+            this.plot.dispose();
 
-        if (displaySurface != null)
-            displaySurface.dispose();
+        if (this.displaySurface != null)
+            this.displaySurface.dispose();
 
         this.displaySurface = new DisplaySurface(this, "Meeting Scheduling Display");
     }
 
     private void buildModel() {
         try {
-            this.employees = EmployeesGenerator.generate(numberOfEmployees, this.container);
+            this.employees = EmployeesGenerator.generate(this.numberOfEmployees, this.occupancyRate, this.container);
 
-            this.groups = GroupsGenerator.generate(numberOfEmployees, numberOfGroups);
+            this.groups = GroupsGenerator.generate(this.numberOfEmployees, this.numberOfGroups);
 
-            this.meetings = MeetingsGenerator.generate(numberOfMeetings, this.groups, this.groups.size());
+            this.meetings = MeetingsGenerator.generate(this.numberOfMeetings, this.groups, this.groups.size());
 
             this.scheduler = new Scheduler(this.groups, this.meetings);
-            scheduler.setEmployeeNumber(employees.size());
-            this.container.acceptNewAgent(scheduler.getId(), scheduler).start();
+            this.scheduler.setEmployeeNumber(this.employees.size());
+            this.container.acceptNewAgent(this.scheduler.getId(), this.scheduler).start();
         } catch (StaleProxyException e) {
             System.err.println("Error starting new scheduler agent");
             e.printStackTrace();
         }
 
-        this.employeesSpace = new Object2DGrid(50, this.numberOfEmployees);
-        this.employeesSpace.putObjectAt(20, 5, new Timeslot(20, 5));
+        int numTimeSlots = 50;
+        this.employeesSpace = new Object2DGrid(this.numberOfEmployees, numTimeSlots);
+        for (int employeeIndex = 0; employeeIndex < this.numberOfEmployees; employeeIndex++) {
+            Employee employee = this.employees.get(employeeIndex);
+
+            for (int timeSlotNumber = 0; timeSlotNumber < numTimeSlots; timeSlotNumber++) {
+                int day = timeSlotNumber / 10;
+                int dayTimeslot = timeSlotNumber % 10;
+
+                Timeslot drawable = new Timeslot(employeeIndex, timeSlotNumber, day, dayTimeslot, employee);
+                this.employeesSpace.putObjectAt(employeeIndex, timeSlotNumber, drawable);
+            }
+        }
     }
 
     private void buildDisplay() {
@@ -102,7 +115,9 @@ public class SchedulingModel extends Repast3Launcher {
     }
 
     private void buildSchedule() {
-        getSchedule().scheduleActionAtInterval(100, plot, "step", Schedule.LAST);
+        getSchedule().scheduleActionAtInterval(100, this.plot, "step", Schedule.LAST);
+        getSchedule().scheduleActionAtInterval(100, this.displaySurface, "updateDisplay", Schedule.LAST);
+
         getSchedule().execute();
     }
 
@@ -130,6 +145,14 @@ public class SchedulingModel extends Repast3Launcher {
         this.numberOfGroups = numberOfGroups;
     }
 
+    public int getOccupancyRate() {
+        return occupancyRate;
+    }
+
+    public void setOccupancyRate(int occupancyRate) {
+        this.occupancyRate = occupancyRate;
+    }
+
     @Override
     protected void launchJADE() {
         this.runtime = Runtime.instance();
@@ -144,6 +167,7 @@ public class SchedulingModel extends Repast3Launcher {
                 "numberOfEmployees",
                 "numberOfGroups",
                 "numberOfMeetings",
+                "occupancyRate"
         };
     }
 

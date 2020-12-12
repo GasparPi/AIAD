@@ -11,8 +11,6 @@ import sajas.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import uchicago.src.sim.gui.Drawable;
-import uchicago.src.sim.gui.SimGraphics;
 
 import java.sql.Time;
 import java.util.*;
@@ -166,5 +164,25 @@ public class Employee extends Agent {
 
     public int getMeetings() {
         return meetings;
+    }
+
+    private String parseDay(int day) {
+        if (day == 0) return "monday";
+        else if (day == 1) return "tuesday";
+        else if (day == 2) return "wednesday";
+        else if (day == 3) return "thursday";
+        else if (day == 4) return "friday";
+        else return "";
+    }
+
+    public boolean hasTimeSlotScheduled(int day, int timeslot) {
+        ArrayList<Timeslot> dayAgenda = this.agenda.get(parseDay(day));
+        for (Timeslot ts : dayAgenda) {
+            if (ts.getSlotIdentifier() == timeslot + 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
