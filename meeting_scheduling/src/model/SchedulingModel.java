@@ -40,6 +40,10 @@ public class SchedulingModel extends Repast3Launcher {
         this.numberOfMeetings = numberOfMeetings;
     }
 
+    public SchedulingModel() {
+
+    }
+
     @Override
     public void begin() {
         super.begin();
@@ -74,6 +78,7 @@ public class SchedulingModel extends Repast3Launcher {
             this.groups = GroupsGenerator.generate(numberOfEmployees, numberOfGroups);
 
             // generate MEETINGS
+            this.meetings = new ArrayList<>();
 
             // Setup Scheduler
             this.scheduler = new Scheduler(this.groups, this.meetings);

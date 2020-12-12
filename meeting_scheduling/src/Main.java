@@ -1,23 +1,21 @@
-
 import logger.MyLogger;
 import model.SchedulingModel;
 import uchicago.src.sim.engine.SimInit;
 
 public class Main {
     public static void main(String[] args) {
-        if (args.length == 0) {
-            System.err.println("Usage: <num_employees> <num_groups> <num_meetings>");
-            return;
-        }
+        SchedulingModel schedulingModel = new SchedulingModel();
 
-        int numberOfEmployees = Integer.parseInt(args[0]);
-        int numberOfGroups = Integer.parseInt(args[1]);
-        int numberOfMeetings = Integer.parseInt(args[2]);
+        if (args.length == 3) {
+            schedulingModel.setNumberOfEmployees(Integer.parseInt(args[0]));
+            schedulingModel.setNumberOfGroups(Integer.parseInt(args[1]));
+            schedulingModel.setNumberOfEmployees(Integer.parseInt(args[2]));
+        }
 
         MyLogger.deletePreviousLogs();
 
         SimInit init = new SimInit();
-        init.loadModel(new SchedulingModel(numberOfEmployees, numberOfGroups, numberOfMeetings), null, false);
+        init.loadModel(schedulingModel, null, false);
     }
 
     /* private final String groupsFile;
