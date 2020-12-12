@@ -17,7 +17,7 @@ public class MeetingsGenerator {
 
         for(int i = 1; i <= numberOfMeetings; i++){ //generate one for group and more
             int duration = 1 + (int) (Math.random() * 3);
-            int group = 1 + (int) (Math.random() * numberOfGroups);
+            int group = (int) (Math.random() * numberOfGroups);
 
             ArrayList<Integer> obligatoryEmployees = generateObligatoryEmployees(groups.get(group).getEmployees());
 
