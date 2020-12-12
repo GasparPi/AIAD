@@ -39,6 +39,10 @@ public class Group {
         return stringBuilder.toString();
     }
 
+    public boolean hasEmployee(int employeeId) {
+        return this.employees.contains(employeeId);
+    }
+
     public void incMeetings() { meetings++; }
 
     public int getMeetings() {

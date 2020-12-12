@@ -5,27 +5,36 @@ import java.util.ArrayList;
 
 public class GroupsGenerator {
 
-    private static ArrayList<Group> generateGroups(int numberOfEmployees, int numberOfGroups) {
-        return new ArrayList<>();
-    }
+    public static ArrayList<Group> generate(int numberOfEmployees, int numberOfGroups) {
+        ArrayList<Group> groups = new ArrayList<>();
 
-    private static ArrayList<Integer> generateEmployees(ArrayList<Integer> employeeArray) {
-        ArrayList<Integer> employees = new ArrayList<>();
+        int maxNumGroupEmployees = numberOfEmployees / numberOfGroups;
 
-        ArrayList<Integer> aux = new ArrayList<>();
-        aux.addAll(employeeArray);
-        int numberOfEmployees = 2 + (int) (Math.random() * (aux.size() - 1));
+        for (int i = 0; i < numberOfGroups; i++) {
+            Group group = new Group(i);
 
-        if (numberOfEmployees == aux.size())
-            return aux;
+            int numGroupEmployees = 2 + (int) (Math.random() * (maxNumGroupEmployees - 1));
+            for (int j = 0; j < numGroupEmployees; j++) {
 
-        for (int i = 0; i < numberOfEmployees; i++) {
-            int j = (int) (Math.random() * aux.size());
-            employees.add(aux.get(j));
-            aux.remove(j);
+                int employeeId;
+                do {
+                    employeeId = (int) (Math.random() * (numberOfEmployees - 1));
+                } while (group.hasEmployee(employeeId));
+
+                group.addEmployee(employeeId);
+            }
         }
 
-        return employees;
-    }
+        // Ensure that every employee belongs to at least one group
+        for (int i = 0; i < numberOfEmployees; i++) {
+            int groupId ;
+            do {
+                groupId = (int) (Math.random() * (numberOfGroups - 1));
+            } while (groups.get(groupId).hasEmployee(i));
 
+            groups.get(groupId).addEmployee(i);
+        }
+
+        return groups;
+    }
 }
