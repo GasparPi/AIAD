@@ -14,6 +14,9 @@ import jade.wrapper.StaleProxyException;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.ContainerController;
+import uchicago.src.sim.analysis.BinDataSource;
+import uchicago.src.sim.analysis.Histogram;
+import uchicago.src.sim.analysis.OpenHistogram;
 import uchicago.src.sim.analysis.OpenSequenceGraph;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.gui.DisplaySurface;
@@ -40,6 +43,7 @@ public class SchedulingModel extends Repast3Launcher {
     private Object2DGrid employeesSpace;
     private DisplaySurface displaySurface;
     private OpenSequenceGraph plot;
+    private Histogram bar;
 
     @Override
     public void begin() {
@@ -51,6 +55,7 @@ public class SchedulingModel extends Repast3Launcher {
 
         this.displaySurface.display();
         this.plot.display();
+        this.bar.display();
     }
 
     @Override
@@ -63,6 +68,9 @@ public class SchedulingModel extends Repast3Launcher {
 
         if (plot != null)
             plot.dispose();
+
+        if (bar != null)
+            bar.dispose();
 
         if (displaySurface != null)
             displaySurface.dispose();
@@ -99,10 +107,28 @@ public class SchedulingModel extends Repast3Launcher {
 
         this.displaySurface.addDisplayableProbeable(employeeDisplay, "Employees");
         addSimEventListener(this.displaySurface);
+
+
+        bar = new Histogram("Scheduled Meetings Per Group", numberOfGroups + 1, 0,  numberOfGroups + 1, this);
+
+        bar.setYRange(0, numberOfMeetings/2);
+        bar.setAxisTitles("Groups", "Number of Meetings");
+
+        BinDataSource source = new BinDataSource()  {
+            public double getBinValue(Object o) {
+                Meeting g = (Meeting) o;
+                return g.getGroupIfScheduled();
+            }
+        };
+
+        bar.createHistogramItem("Meetings", meetings, source);
+
     }
 
     private void buildSchedule() {
+        //getSchedule().scheduleActionAtInterval(1, displaySurface, "updateDisplay", Schedule.LAST);
         getSchedule().scheduleActionAtInterval(100, plot, "step", Schedule.LAST);
+        getSchedule().scheduleActionAtInterval(100, bar, "step", Schedule.LAST);
         getSchedule().execute();
     }
 

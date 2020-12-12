@@ -13,6 +13,7 @@ public class Meeting {
     private int endSlot;
     private ArrayList<Integer> attendingEmployees;
 
+
     private final ArrayList<Integer> obligatoryEmployees;
 
     public Meeting(int id, int duration, int groupId, ArrayList<Integer> obligatoryEmployees) {
@@ -51,6 +52,15 @@ public class Meeting {
 
     public int getGroupId() {
         return this.groupId;
+    }
+
+    public int getGroupIfScheduled() {
+        if(day != null && !day.equals("NULL")){
+            return this.groupId;
+        }
+        else{
+            return 0;
+        }
     }
 
     public ArrayList<Integer> getObligatoryEmployees() {
