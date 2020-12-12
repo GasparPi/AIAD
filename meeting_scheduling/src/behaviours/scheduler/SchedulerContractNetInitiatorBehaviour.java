@@ -232,6 +232,7 @@ public class SchedulerContractNetInitiatorBehaviour extends ContractNetInitiator
         if (scheduledSuccessfully){
             TSPair firstSuggestion = suggestions.get(0);
             currentMeetingObject.schedule(firstSuggestion.getDay(), firstSuggestion.getTimeslot(), firstSuggestion.getTimeslot() + currentMeetingObject.getDuration() - 1, acceptors);
+            schedulerAgent.getGroups().get(schedulerAgent.getMeetings().get(currentMeeting).getGroupId()).incMeetings();
             System.out.println("Meeting " + currentMeetingObject.getId() + " scheduled successfully.");
         }
     }

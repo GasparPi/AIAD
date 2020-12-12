@@ -8,6 +8,9 @@ import java.awt.*;
 
 public class Timeslot implements Drawable {
 
+    private final Color occupiedColor = Color.RED;
+    private final Color freeColor = Color.GREEN;
+
     private final int posX;
     private final int posY;
     private final int day;
@@ -24,7 +27,7 @@ public class Timeslot implements Drawable {
 
     @Override
     public void draw(SimGraphics simGraphics) {
-        Color blockColor = this.employee.hasTimeSlotScheduled(this.day, this.dayTimeslot) ? Color.GREEN : Color.LIGHT_GRAY;
+        Color blockColor = this.employee.hasTimeSlotScheduled(this.day, this.dayTimeslot) ? this.occupiedColor : this.freeColor;
         simGraphics.drawFastRect(blockColor);
     }
 

@@ -14,6 +14,8 @@ import jade.wrapper.StaleProxyException;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.ContainerController;
+import uchicago.src.sim.analysis.BinDataSource;
+import uchicago.src.sim.analysis.Histogram;
 import uchicago.src.sim.analysis.OpenSequenceGraph;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.gui.DisplaySurface;
@@ -41,6 +43,7 @@ public class SchedulingModel extends Repast3Launcher {
     private Object2DGrid employeesSpace;
     private DisplaySurface displaySurface;
     private OpenSequenceGraph plot;
+    private Histogram bar;
 
     @Override
     public void begin() {
@@ -51,7 +54,8 @@ public class SchedulingModel extends Repast3Launcher {
         this.buildSchedule();
 
         this.displaySurface.display();
-        this.plot.display();
+        //this.plot.display();
+        this.bar.display();
     }
 
     @Override
@@ -69,10 +73,18 @@ public class SchedulingModel extends Repast3Launcher {
         if (this.displaySurface != null)
             this.displaySurface.dispose();
 
+        if (bar != null)
+            bar.dispose();
+
         this.displaySurface = new DisplaySurface(this, "Meeting Scheduling Display");
     }
 
     private void buildModel() {
+        this.buildAgents();
+        this.buildSpace();
+    }
+
+    private void buildAgents() {
         try {
             this.employees = EmployeesGenerator.generate(this.numberOfEmployees, this.occupancyRate, this.container);
 
@@ -87,7 +99,9 @@ public class SchedulingModel extends Repast3Launcher {
             System.err.println("Error starting new scheduler agent");
             e.printStackTrace();
         }
+    }
 
+    private void buildSpace() {
         int numTimeSlots = 50;
         this.employeesSpace = new Object2DGrid(this.numberOfEmployees, numTimeSlots);
         for (int employeeIndex = 0; employeeIndex < this.numberOfEmployees; employeeIndex++) {
@@ -104,19 +118,32 @@ public class SchedulingModel extends Repast3Launcher {
     }
 
     private void buildDisplay() {
+        /*
         plot = new OpenSequenceGraph("Employees", this);
-        plot.setAxisTitles("Employees", "Meetings");
-        // ADD SEQUENCE
+        plot.setAxisTitles("Employees", "Meetings");*/
 
         Object2DDisplay employeeDisplay = new Object2DDisplay(this.employeesSpace);
-
-        this.displaySurface.addDisplayableProbeable(employeeDisplay, "Employees");
+        this.displaySurface.addDisplayable(employeeDisplay, "Employees");
         addSimEventListener(this.displaySurface);
+
+        bar = new Histogram("Scheduled Meetings Per Group", numberOfGroups + 1, 0,  numberOfGroups + 1, this);
+        bar.setYRange(0, numberOfMeetings / 2);
+        bar.setAxisTitles("Groups", "Number of Meetings");
+
+        BinDataSource source = new BinDataSource()  {
+            public double getBinValue(Object o) {
+                Meeting g = (Meeting) o;
+                return g.getGroupIfScheduled();
+            }
+        };
+
+        bar.createHistogramItem("Meetings", meetings, source);
     }
 
     private void buildSchedule() {
-        getSchedule().scheduleActionAtInterval(100, this.plot, "step", Schedule.LAST);
+        //getSchedule().scheduleActionAtInterval(100, this.plot, "step", Schedule.LAST);
         getSchedule().scheduleActionAtInterval(100, this.displaySurface, "updateDisplay", Schedule.LAST);
+        getSchedule().scheduleActionAtInterval(100, bar, "step", Schedule.LAST);
 
         getSchedule().execute();
     }
