@@ -4,6 +4,7 @@ import agents.Employee;
 import agents.Scheduler;
 import data.Group;
 import data.Meeting;
+import drawables.Timeslot;
 import generators.EmployeesGenerator;
 import generators.GroupsGenerator;
 import generators.MeetingsGenerator;
@@ -36,7 +37,7 @@ public class SchedulingModel extends Repast3Launcher {
     Profile profile;
     ContainerController container;
 
-    private Object2DGrid space;
+    private Object2DGrid employeesSpace;
     private DisplaySurface displaySurface;
     private OpenSequenceGraph plot;
 
@@ -85,21 +86,19 @@ public class SchedulingModel extends Repast3Launcher {
             e.printStackTrace();
         }
 
+        this.employeesSpace = new Object2DGrid(50, this.numberOfEmployees);
+        this.employeesSpace.putObjectAt(20, 5, new Timeslot(20, 5));
     }
-
 
     private void buildDisplay() {
         plot = new OpenSequenceGraph("Employees", this);
         plot.setAxisTitles("Employees", "Meetings");
         // ADD SEQUENCE
 
-        Object2DDisplay agentDisplay = new Object2DDisplay(this.space);
-        agentDisplay.setObjectList(this.employees);
+        Object2DDisplay employeeDisplay = new Object2DDisplay(this.employeesSpace);
 
-        this.displaySurface.addDisplayableProbeable(agentDisplay, "Agents");
+        this.displaySurface.addDisplayableProbeable(employeeDisplay, "Employees");
         addSimEventListener(this.displaySurface);
-
-
     }
 
     private void buildSchedule() {
