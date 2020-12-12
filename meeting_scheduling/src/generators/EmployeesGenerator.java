@@ -2,56 +2,22 @@ package generators;
 
 import agents.Employee;
 import data.Timeslot;
+import jade.wrapper.StaleProxyException;
+import sajas.wrapper.ContainerController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EmployeesGenerator {
-    //final static String GENERATED_DIR = "problem_generator/generated/";
-
-    /*
-    public static boolean generate(String fileCode, Integer numberOfEmployees){
-        try {
-
-            File file = new File(GENERATED_DIR + fileCode + "_employees.json");
-
-            if(!file.createNewFile()){
-                System.err.println("File already exists");
-                return false;
-            }
-
-            FileWriter fileWriter = new FileWriter(file);
-            JSONArray finalObject = new JSONArray();
-
-            for(int i = 1; i <= numberOfEmployees; i++){
-                JSONObject employeeObject = new JSONObject();
-
-                employeeObject.put("id", i);
-
-                employeeObject.put("agenda", generateAgenda());
-
-                finalObject.add(employeeObject);
-            }
-
-            fileWriter.write(finalObject.toJSONString());
-
-            fileWriter.close();
-        } catch (IOException e) {
-            System.err.println("Failed to open file");
-            return false;
-        }
-
-        return true;
-    }
-     */
-
-    public static ArrayList<Employee> generate(Integer numberOfEmployees) {
+    public static ArrayList<Employee> generate(Integer numberOfEmployees, ContainerController container) throws StaleProxyException {
         ArrayList<Employee> employees = new ArrayList<>();
 
         for(int i = 1; i <= numberOfEmployees; i++){
             Employee e = new Employee(i, generateAgenda());
 
             employees.add(e);
+
+            container.acceptNewAgent(e.getStringId(), e).start();
         }
 
         return employees;

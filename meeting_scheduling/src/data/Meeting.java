@@ -15,15 +15,11 @@ public class Meeting {
 
     private final ArrayList<Integer> obligatoryEmployees;
 
-    public Meeting(int id, int duration, int groupId) {
+    public Meeting(int id, int duration, int groupId, ArrayList<Integer> obligatoryEmployees) {
         this.id = id;
         this.duration = duration;
         this.groupId = groupId;
-        this.obligatoryEmployees = new ArrayList<>();
-    }
-
-    public void addObligatoryEmployee(int employeeId) {
-        this.obligatoryEmployees.add(employeeId);
+        this.obligatoryEmployees = obligatoryEmployees;
     }
 
     public void schedule(String day, int startSlot, int endSlot, ArrayList<Integer> attendingEmployees) {

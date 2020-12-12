@@ -1,5 +1,7 @@
 package generators;
 
+import data.Group;
+import data.Meeting;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -10,47 +12,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MeetingsGenerator {
-    final static String GENERATED_DIR = "problem_generator/generated/";
+    public static ArrayList<Meeting> generate(Integer numberOfMeetings, ArrayList<Group> groups, Integer numberOfGroups) {
+        ArrayList<Meeting> meetings = new ArrayList<>();
 
-    public static boolean generate(String fileCode, Integer numberOfMeetings, HashMap<Integer, ArrayList<Integer>> groups, Integer numberOfGroups) {
-        try {
-            File file = new File(GENERATED_DIR + fileCode + "_meetings.json");
+        for(int i = 1; i <= numberOfMeetings; i++){ //generate one for group and more
+            int duration = 1 + (int) (Math.random() * 3);
+            int group = 1 + (int) (Math.random() * numberOfGroups);
 
-            if(!file.createNewFile()){
-                System.err.println("File already exists");
-                return false;
-            }
+            ArrayList<Integer> obligatoryEmployees = generateObligatoryEmployees(groups.get(group).getEmployees());
 
-            FileWriter fileWriter = new FileWriter(file);
-            JSONArray finalObject = new JSONArray();
-
-            for(int i = 1; i <= numberOfMeetings; i++){ //generate one for group and more
-                JSONObject meetingObject = new JSONObject();
-
-                meetingObject.put("id", i);
-
-                int duration = 1 + (int) (Math.random() * 3);
-
-                meetingObject.put("duration", duration);
-
-                int group = 1 + (int) (Math.random() * numberOfGroups);
-
-                meetingObject.put("group", group);
-
-                meetingObject.put("obligatory-employees", generateObligatoryEmployees(groups.get(group)));
-
-                finalObject.add(meetingObject);
-            }
-
-            fileWriter.write(finalObject.toJSONString());
-
-            fileWriter.close();
-        } catch (IOException e) {
-            System.err.println("Failed to open file");
-            return false;
+            meetings.add(new Meeting(i, duration, group, obligatoryEmployees));
         }
 
-        return true;
+        return meetings;
     }
 
     private static ArrayList<Integer> generateObligatoryEmployees(ArrayList<Integer> employees) {

@@ -6,6 +6,7 @@ import data.Group;
 import data.Meeting;
 import generators.EmployeesGenerator;
 import generators.GroupsGenerator;
+import generators.MeetingsGenerator;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.StaleProxyException;
@@ -19,9 +20,9 @@ import java.util.ArrayList;
 
 public class SchedulingModel extends Repast3Launcher {
 
-    private int numberOfEmployees = 100;
-    private int numberOfGroups = 50;
-    private int numberOfMeetings = 200;
+    private int numberOfEmployees;
+    private int numberOfGroups;
+    private int numberOfMeetings;
 
     ArrayList<Employee> employees;
     ArrayList<Meeting> meetings;
@@ -58,24 +59,12 @@ public class SchedulingModel extends Repast3Launcher {
         getSchedule().execute();
 
         try {
-            //Add employee agents to container
+            this.employees = EmployeesGenerator.generate(numberOfEmployees, this.container);
 
-            // generate EMPLOYEES
-            this.employees = EmployeesGenerator.generate(numberOfEmployees);
-            try {
-                for (Employee e : employees) {
-                    this.container.acceptNewAgent(e.getStringId(), e).start();
-                }
-            } catch (StaleProxyException e){
-                e.printStackTrace();
-            }
-
-            // generate GROUPS
             this.groups = GroupsGenerator.generate(numberOfEmployees, numberOfGroups);
 
-            // generate MEETINGS
+            this.meetings = MeetingsGenerator.generate(numberOfEmployees, this.groups, this.groups.size());
 
-            // Setup Scheduler
             this.scheduler = new Scheduler(this.groups, this.meetings);
             scheduler.setEmployeeNumber(employees.size());
             this.container.acceptNewAgent(scheduler.getId(), scheduler).start();
