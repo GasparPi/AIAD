@@ -20,9 +20,9 @@ import java.util.ArrayList;
 
 public class SchedulingModel extends Repast3Launcher {
 
-    private int numberOfEmployees;
-    private int numberOfGroups;
-    private int numberOfMeetings;
+    private int numberOfEmployees = 50;
+    private int numberOfGroups = 50;
+    private int numberOfMeetings = 50;
 
     ArrayList<Employee> employees;
     ArrayList<Meeting> meetings;
@@ -35,29 +35,28 @@ public class SchedulingModel extends Repast3Launcher {
 
     private OpenSequenceGraph plot;
 
-    public SchedulingModel(int numberOfEmployees, int numberOfGroups, int numberOfMeetings) {
-        this.numberOfEmployees = numberOfEmployees;
-        this.numberOfGroups = numberOfGroups;
-        this.numberOfMeetings = numberOfMeetings;
-    }
-
     @Override
     public void begin() {
         super.begin();
 
-        this.employees = new ArrayList<>();
+        this.beginGraphs();
+        this.beginAgents();
+    }
 
+    public void beginGraphs() {
         if (plot != null)
             plot.dispose();
 
         plot = new OpenSequenceGraph("Employees", this);
         plot.setAxisTitles("Employees", "Meetings");
-//      ADD SEQUENCE
+        // ADD SEQUENCE
         plot.display();
 
         getSchedule().scheduleActionAtInterval(100, plot, "step", Schedule.LAST);
         getSchedule().execute();
+    }
 
+    public void beginAgents() {
         try {
             this.employees = EmployeesGenerator.generate(numberOfEmployees, this.container);
 
@@ -68,9 +67,9 @@ public class SchedulingModel extends Repast3Launcher {
             this.scheduler = new Scheduler(this.groups, this.meetings);
             scheduler.setEmployeeNumber(employees.size());
             this.container.acceptNewAgent(scheduler.getId(), scheduler).start();
-
-        } catch (StaleProxyException staleProxyException) {
-            staleProxyException.printStackTrace();
+        } catch (StaleProxyException e) {
+            System.err.println("Error starting new scheduler agent");
+            e.printStackTrace();
         }
     }
 
@@ -111,6 +110,7 @@ public class SchedulingModel extends Repast3Launcher {
         super.setup();
 
         setNumberOfEmployees(this.numberOfEmployees);
+        setNumberOfGroups(this.numberOfGroups);
         setNumberOfMeetings(this.numberOfMeetings);
     }
 
