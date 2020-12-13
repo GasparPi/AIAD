@@ -36,7 +36,7 @@ public class MeetingInfo implements Drawable {
                 info = info + "; DAY: " + this.meeting.getDay() + "; START: " + this.meeting.getStartSlot() +
                         "; END: " + this.meeting.getEndSlot() +
                         "; ATTENDANCE: " + this.meeting.getAttendingEmployees().size() +
-                        "OUT OF " + this.meeting.getGroupEmployees().size();
+                        " OUT OF " + this.meeting.getGroupEmployees().size();
             }
         }
 
