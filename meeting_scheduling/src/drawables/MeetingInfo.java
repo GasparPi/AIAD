@@ -41,8 +41,8 @@ public class MeetingInfo implements Drawable {
         }
 
         simGraphics.drawFastRect(blockColor);
-        simGraphics.drawString(info, Color.BLACK);
         simGraphics.drawRectBorder(new BasicStroke(), Color.BLACK);
+        simGraphics.drawString(info, Color.BLACK);
     }
 
     @Override

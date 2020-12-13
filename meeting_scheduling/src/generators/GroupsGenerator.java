@@ -10,7 +10,7 @@ public class GroupsGenerator {
 
         int maxNumGroupEmployees = numberOfEmployees / numberOfGroups;
 
-        for (int i = 0; i < numberOfGroups; i++) {
+        for (int i = 1; i <= numberOfGroups; i++) {
             Group group = new Group(i);
 
             int numGroupEmployees = 2 + (int) (Math.random() * (maxNumGroupEmployees - 1));
