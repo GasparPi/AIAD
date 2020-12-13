@@ -7,6 +7,7 @@ public class Meeting {
     private final int id;
     private final int duration;
     private final int groupId;
+    private final ArrayList<Integer> groupEmployees;
 
     private String day;
     private int startSlot;
@@ -15,15 +16,19 @@ public class Meeting {
 
 
     private final ArrayList<Integer> obligatoryEmployees;
+    private boolean scheduled;
 
-    public Meeting(int id, int duration, int groupId, ArrayList<Integer> obligatoryEmployees) {
+    public Meeting(int id, int duration, int groupId, ArrayList<Integer> groupEmployees, ArrayList<Integer> obligatoryEmployees) {
         this.id = id;
         this.duration = duration;
         this.groupId = groupId;
+        this.groupEmployees = groupEmployees;
         this.obligatoryEmployees = obligatoryEmployees;
+        this.scheduled = false;
     }
 
     public void schedule(String day, int startSlot, int endSlot, ArrayList<Integer> attendingEmployees) {
+        this.scheduled = true;
         this.day = day;
         this.startSlot = startSlot;
         this.endSlot = endSlot;
@@ -81,5 +86,13 @@ public class Meeting {
 
     public ArrayList<Integer> getAttendingEmployees() {
         return attendingEmployees;
+    }
+
+    public ArrayList<Integer> getGroupEmployees() {
+        return groupEmployees;
+    }
+
+    public boolean isScheduled() {
+        return scheduled;
     }
 }

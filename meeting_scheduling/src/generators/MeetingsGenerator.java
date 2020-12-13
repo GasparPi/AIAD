@@ -21,7 +21,7 @@ public class MeetingsGenerator {
 
             ArrayList<Integer> obligatoryEmployees = generateObligatoryEmployees(groups.get(group).getEmployees());
 
-            meetings.add(new Meeting(i, duration, group, obligatoryEmployees));
+            meetings.add(new Meeting(i, duration, group, obligatoryEmployees, groups.get(group).getEmployees()));
         }
 
         return meetings;
